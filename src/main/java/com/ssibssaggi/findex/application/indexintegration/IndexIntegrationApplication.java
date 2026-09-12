@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssibssaggi.findex.client.openapi.IndexDataFetchQuery;
 import com.ssibssaggi.findex.client.openapi.IndexOpenApiClient;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.SyncJobDto;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
@@ -68,5 +70,13 @@ public class IndexIntegrationApplication {
         List<IntegrationHistory> integrationHistories = integrationHistoryService.insertIndexDataHistory(
                 insertIntegrationHistoryCommands);
         return SyncJobDto.from(integrationHistories);
+    }
+
+    @Transactional
+    public CursorPageResult<SyncJobDto> querySyncJobs(
+            IntegrationHistoryFilterCondition queryFilterCondition,
+            CursorPaginationCondition paginationCondition
+    ) {
+        return null;
     }
 }
