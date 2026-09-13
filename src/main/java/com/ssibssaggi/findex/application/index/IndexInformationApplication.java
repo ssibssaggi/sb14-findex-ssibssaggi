@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoUpdateCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.controller.dto.AutoSyncConfigDto;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
@@ -78,5 +79,59 @@ public class IndexInformationApplication {
     ) {
         IndexInformation updated = indexInformationService.updateEnabled(id, enabled);
         return AutoSyncConfigDto.of(updated);
+    }
+
+    @Transactional
+    public CursorPageResult<AutoSyncConfigDto> searchSyncConfig(
+            Long indexInfoId,
+            Boolean enabled,
+            CursorPaginationCondition paginationCondition
+    ) {
+        List<IndexInformation> found = indexInformationService.searchAutoSyncConfig(
+                indexInfoId,
+                enabled,
+                paginationCondition
+        );
+
+        Long totalElements = indexInformationService.countByEnabled(indexInfoId, enabled);
+
+        return createCursorPageResult(found, totalElements, paginationCondition);
+    }
+
+    private CursorPageResult<AutoSyncConfigDto> createCursorPageResult(
+            List<IndexInformation> found,
+            Long totalElement,
+            CursorPaginationCondition paginationCondition
+    ) {
+        boolean hasNext = found.size() > paginationCondition.size();
+        List<IndexInformation> contents = found.subList(0,
+                Math.min(found.size(), paginationCondition.size()));
+        Long nextIdAfter = null;
+        String nextCursor = null;
+
+        if (hasNext) {
+            IndexInformation lastEntity = contents.get(contents.size() - 1);
+
+            nextIdAfter = lastEntity.getId();
+            nextCursor = getLastSortValue(paginationCondition.sortField(), lastEntity);
+        }
+
+        PageMeta pageMeta = PageMeta.builder()
+                .nextCursor(nextCursor)
+                .nextIdAfter(nextIdAfter)
+                .size(paginationCondition.size())
+                .totalElements(totalElement)
+                .hasNext(hasNext)
+                .build();
+
+        return CursorPageResult.of(AutoSyncConfigDto.from(contents), pageMeta);
+    }
+
+    private String getLastSortValue(String sortField, IndexInformation lastEntity) {
+        return switch (sortField) {
+            case "enabled" -> Boolean.toString(lastEntity.isAutoSyncEnabled());
+            case "indexInfo.indexName" -> lastEntity.getIndexName();
+            default -> null;
+        };
     }
 }

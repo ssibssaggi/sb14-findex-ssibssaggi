@@ -112,4 +112,12 @@ public class IndexInformation {
         autoSyncConfig.updateEnabled(enabled);
         return this;
     }
+
+    public boolean isAutoSyncEnabled() {
+        return autoSyncConfig.isEnabled();
+    }
+
+    public Long getAutoSyncId() {
+        return autoSyncConfig.getId();
+    }
 }

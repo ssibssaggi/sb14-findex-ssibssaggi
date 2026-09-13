@@ -180,4 +180,20 @@ public class IndexInformationService {
 
         return updating.updateEnabled(enabled);
     }
+
+    public List<IndexInformation> searchAutoSyncConfig(
+            Long indexInfoId,
+            Boolean enabled,
+            CursorPaginationCondition paginationCondition
+    ) {
+        return indexInformationRepository.findByAutoSyncConfigEnabled(
+                paginationCondition,
+                indexInfoId,
+                enabled
+        );
+    }
+
+    public Long countByEnabled(Long id, Boolean enabled) {
+        return indexInformationRepository.countByEnabled(id, enabled);
+    }
 }
