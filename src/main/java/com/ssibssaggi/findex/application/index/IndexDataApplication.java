@@ -1,5 +1,11 @@
 package com.ssibssaggi.findex.application.index;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.index.dto.Performance;
@@ -10,11 +16,8 @@ import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.service.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
-import java.time.LocalDate;
-import java.util.List;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,21 +60,21 @@ public class IndexDataApplication {
 
     @Transactional
     public List<IndexPerformanceRankResponse> getPerformanceRanking(
-        Long indexInfoId, String periodType, Integer limit
+            Long indexInfoId, String periodType, Integer limit
     ) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
 
         List<IndexData> baseDateData = indexDataService.findDataByBaseDate(
-            baseDate,
-            indexInfoId,
-            limit
+                baseDate,
+                indexInfoId,
+                limit
         );
 
         List<IndexData> periodData = indexDataService.findPeriodDataByBaseDate(
-            baseDate,
-            indexInfoId,
-            periodType,
-            limit
+                baseDate,
+                indexInfoId,
+                periodType,
+                limit
         );
 
         List<Performance> performances = PerformanceAssembler.assemble(baseDateData, periodData);
