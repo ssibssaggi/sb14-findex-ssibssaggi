@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssibssaggi.findex.application.indexintegration.InsertIntegrationHistoryCommand;
+import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
-import com.ssibssaggi.findex.repository.IntegrationHistoryRepository;
+import com.ssibssaggi.findex.repository.integrationhistory.IntegrationHistoryRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,5 +37,19 @@ public class IntegrationHistoryService {
                 .toList();
 
         return integrationHistoryRepository.saveAll(creating);
+    }
+
+    public List<IntegrationHistory> searchIntegrationHistories(
+            IntegrationHistoryFilterCondition queryFilterCondition,
+            CursorPaginationCondition paginationCondition) {
+
+        return integrationHistoryRepository.searchIntegrationHistories(
+                queryFilterCondition,
+                paginationCondition
+        );
+    }
+
+    public Long countIntegrationHistories(IntegrationHistoryFilterCondition queryFilterCondition) {
+        return integrationHistoryRepository.countIntegrationHistories(queryFilterCondition);
     }
 }
