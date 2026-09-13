@@ -46,6 +46,7 @@ public class IndexDataServiceImplement implements IndexDataService {
         );
     }
 
+    // 정의되어있는 repository 이름이 이상한듯?
     @Override
     public List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands) {
         List<IndexData> indexData = insertIndexDataCommands.stream()

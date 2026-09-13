@@ -20,8 +20,12 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"index_information_id", "base_date"})
+    })
 public class IndexData {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,32 +46,82 @@ public class IndexData {
     private IndexInformation indexInformation;
 
     public static IndexData createWithOpenApi(
-            IndexInformation indexInformation,
-            LocalDate baseDate,
-            BigDecimal marketPrice,
-            BigDecimal closingPrice,
-            BigDecimal highPrice,
-            BigDecimal lowPrice,
-            BigDecimal versus,
-            BigDecimal fluctuationRate,
-            Long tradingQuantity,
-            Long tradingPrice,
-            Long marketTotalAmount
+        IndexInformation indexInformation,
+        LocalDate baseDate,
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount
     ) {
         return new IndexData(
-                null,
-                baseDate,
-                SourceType.OPEN_API,
-                marketPrice,
-                closingPrice,
-                highPrice,
-                lowPrice,
-                versus,
-                fluctuationRate,
-                tradingQuantity,
-                tradingPrice,
-                marketTotalAmount,
-                indexInformation
+            null,
+            baseDate,
+            SourceType.OPEN_API,
+            marketPrice,
+            closingPrice,
+            highPrice,
+            lowPrice,
+            versus,
+            fluctuationRate,
+            tradingQuantity,
+            tradingPrice,
+            marketTotalAmount,
+            indexInformation
         );
+    }
+
+    public static IndexData createWithUser(
+        LocalDate baseDate,
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount,
+        IndexInformation indexInformation) {
+        IndexData entity = new IndexData();
+        entity.baseDate = baseDate;
+        entity.sourceType = SourceType.USER;
+        entity.marketPrice = marketPrice;
+        entity.closingPrice = closingPrice;
+        entity.highPrice = highPrice;
+        entity.lowPrice = lowPrice;
+        entity.versus = versus;
+        entity.fluctuationRate = fluctuationRate;
+        entity.tradingQuantity = tradingQuantity;
+        entity.tradingPrice = tradingPrice;
+        entity.marketTotalAmount = marketTotalAmount;
+        entity.indexInformation = indexInformation;
+        return entity;
+    }
+
+    public void update(
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount) {
+        this.marketPrice = marketPrice;
+        this.closingPrice = closingPrice;
+        this.highPrice = highPrice;
+        this.lowPrice = lowPrice;
+        this.versus = versus;
+        this.fluctuationRate = fluctuationRate;
+        this.tradingQuantity = tradingQuantity;
+        this.tradingPrice = tradingPrice;
+        this.marketTotalAmount = marketTotalAmount;
+        this.sourceType = SourceType.USER;
     }
 }
