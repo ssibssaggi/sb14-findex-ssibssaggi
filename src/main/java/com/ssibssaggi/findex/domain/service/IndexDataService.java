@@ -15,4 +15,12 @@ public interface IndexDataService {
     );
 
     List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands);
+
+    List<IndexData> findPeriodDataByBaseDate(
+            LocalDate baseDate,
+            Long indexInfoId,
+            String periodType,
+            Integer limit);
+
+    List<IndexData> findDataByBaseDate(LocalDate baseDate, Long indexInfoId, Integer limit);
 }
