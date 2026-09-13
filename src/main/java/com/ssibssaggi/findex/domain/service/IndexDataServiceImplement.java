@@ -1,12 +1,16 @@
 package com.ssibssaggi.findex.domain.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
@@ -198,5 +202,58 @@ public class IndexDataServiceImplement implements IndexDataService {
     @Override
     public void deleteByIndexInfoId(Long indexInfoId) {
         indexDataRepository.deleteByIndexInformationId(indexInfoId);
+    }
+
+    @Override
+    public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
+        LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
+        Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
+
+        return endDate
+                .map(target -> {
+                    LocalDate startDate = getTargetDate(
+                            target,
+                            PeriodType.safeValueOf(periodType)
+                    );
+
+                    return indexDataRepository
+                            .findAllByIndexInfoIdAndDateBetween(
+                                    indexInfoId,
+                                    startDate,
+                                    target
+                            );
+                })
+                .orElse(List.of());
+    }
+
+    @Override
+    public List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize) {
+        if (sorted.size() < windowSize) {
+            return List.of();
+        }
+
+        List<DataPoints> result = new ArrayList<>();
+        for (int i = sorted.size() - 1; i > windowSize; i--) {
+            List<IndexData> window = sorted.subList(i - windowSize + 1, i);
+            String currentDate = sorted.get(i).getBaseDate().toString();
+            BigDecimal value = window.stream()
+                    .map(IndexData::getClosingPrice)           // 각 IndexData → closingPrice만 추출
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)  // 다 더함 (0부터 시작해서 누적 합)
+                    .divide(new BigDecimal(windowSize),
+                            2,
+                            RoundingMode.HALF_UP); // windowSize로 나눔, 소수 2자리, 반올림
+            System.out.println("value : " + value);
+            result.add(DataPoints.of(currentDate, value));
+        }
+
+        return result;
+    }
+
+    private LocalDate getTargetDate(LocalDate baseDate, PeriodType type) {
+        return switch (type) {
+            case QUARTERLY -> baseDate.minusMonths(3);
+            case YEARLY -> baseDate.minusYears(1);
+            default -> baseDate.minusMonths(1);
+        };
     }
 }

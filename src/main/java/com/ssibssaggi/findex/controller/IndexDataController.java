@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.IndexDataApplication;
+import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
@@ -59,5 +60,15 @@ public class IndexDataController {
                 periodType,
                 limit
         );
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/api/index-data/{id}/chart")
+    public IndexChartResponse getIndexChartData(
+            @PathVariable Long id,
+            @RequestParam String periodType
+    ) {
+
+        return indexDataApplication.getIndexChartData(id, periodType);
     }
 }

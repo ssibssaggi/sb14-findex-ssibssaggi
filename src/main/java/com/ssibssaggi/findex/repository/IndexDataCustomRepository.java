@@ -23,4 +23,10 @@ public interface IndexDataCustomRepository {
             PeriodType periodType,
             Integer limit
     );
+
+    List<IndexData> findAllByIndexInfoIdAndDateBetween(
+            Long indexInfoId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
 }

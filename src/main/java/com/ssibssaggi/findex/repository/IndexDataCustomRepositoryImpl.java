@@ -72,6 +72,25 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
                 .fetch();
     }
 
+    @Override
+    public List<IndexData> findAllByIndexInfoIdAndDateBetween(
+            Long indexInfoId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        QIndexData indexData = QIndexData.indexData;
+
+        return jpaQueryFactory
+                .select(indexData)
+                .from(indexData)
+                .where(
+                        indexData.indexInformation.id.eq(indexInfoId),
+                        indexData.baseDate.between(startDate, endDate)
+                )
+                .orderBy(indexData.baseDate.desc())
+                .fetch();
+    }
+
     private BooleanExpression indexInfoIdContains(Long value) {
         return value == null ? null : QIndexData.indexData.indexInformation.id.eq(value);
     }
@@ -82,8 +101,6 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     ) {
         QIndexData indexData = QIndexData.indexData;
 
-        System.out.println("today : " + today);
-        System.out.println("periodType : " + periodType);
         return switch (periodType) {
             case WEEKLY -> {
                 LocalDate prevWeek = today.minusWeeks(1);
