@@ -6,10 +6,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.application.index.support.PerformanceAssembler;
+import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
@@ -83,5 +85,29 @@ public class IndexDataApplication {
             int rank = performances.indexOf(performance);
             return IndexPerformanceRankResponse.of(performance, rank);
         }).toList();
+    }
+
+    @Transactional
+    public IndexChartResponse getIndexChartData(Long indexInfoId, String periodType) {
+
+        IndexInformation information = indexInformationService.findById(indexInfoId);
+        List<IndexData> chartData = indexDataService.getIndexDataChartData(indexInfoId, periodType);
+
+        List<DataPoints> dataPoints = chartData.stream()
+                .map(indexData -> DataPoints.of(indexData.getBaseDate().toString(), indexData.getClosingPrice())
+                ).toList();
+        List<DataPoints> ma5 = indexDataService.calculateMovingAverage(chartData, 5);
+        List<DataPoints> ma20 = indexDataService.calculateMovingAverage(chartData, 20);
+
+        return IndexChartResponse.of(
+                information.getId(),
+                information.getIndexClassification(),
+                information.getIndexName(),
+                periodType,
+                dataPoints,
+                ma5,
+                ma20
+
+        );
     }
 }

@@ -3,6 +3,7 @@ package com.ssibssaggi.findex.domain.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
@@ -45,4 +46,8 @@ public interface IndexDataService {
     void delete(Long id);
 
     void deleteByIndexInfoId(Long indexInfoId);
+
+    List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType);
+
+    List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);
 }

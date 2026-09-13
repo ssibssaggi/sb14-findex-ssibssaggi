@@ -15,7 +15,9 @@ import lombok.experimental.FieldDefaults;
 public enum PeriodType {
     DAILY("DAILY"),
     WEEKLY("WEEKLY"),
-    MONTHLY("MONTHLY");
+    MONTHLY("MONTHLY"),
+    QUARTERLY("QUARTERLY"),
+    YEARLY("YEARLY");
 
     String value;
 
