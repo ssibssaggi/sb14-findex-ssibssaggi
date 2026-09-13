@@ -20,6 +20,10 @@ public record IndexDataFetchQuery(
         );
     }
 
+    public String indexClassification() {
+        return indexInformation.getIndexClassification();
+    }
+
     public String indexName() {
         return indexInformation.getIndexName();
     }

@@ -90,7 +90,18 @@ public class IndexOpenApiClient {
                         "OpenAPI 가 정상적으로 호출되지 않습니다."
                 ));
 
+        return toMatchingIndexDataFetchResults(response, query);
+    }
+
+    private List<IndexDataFetchResult> toMatchingIndexDataFetchResults(
+            IndexDataOpenApiResponse response,
+            IndexDataFetchQuery query
+    ) {
         return response.items().stream()
+                .filter(item -> item.indexClassificationAndNameEquals(
+                        query.indexClassification(),
+                        query.indexName())
+                )
                 .map(indexData -> IndexDataFetchResult.from(query.indexInformation(), indexData))
                 .toList();
     }

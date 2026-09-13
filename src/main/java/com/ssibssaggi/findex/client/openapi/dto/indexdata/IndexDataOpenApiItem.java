@@ -27,6 +27,13 @@ public record IndexDataOpenApiItem(
         @JsonProperty("trPrc")
         Long tradingPrice,
         @JsonProperty("lstgMrktTotAmt")
-        Long marketTotalAmount
+        Long marketTotalAmount,
+        @JsonProperty("idxCsf")
+        String indexClassification,
+        @JsonProperty("idxNm")
+        String indexName
 ) {
+    public boolean indexClassificationAndNameEquals(String indexClassification, String indexName) {
+        return indexClassification().equals(indexClassification) && indexName().equals(indexName);
+    }
 }
