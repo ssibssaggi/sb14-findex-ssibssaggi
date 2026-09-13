@@ -1,6 +1,7 @@
 package com.ssibssaggi.findex.application.index;
 
-import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
+import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
+import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -18,10 +19,10 @@ public class IndexDataApplication {
     private final IndexInformationService indexInformationService;
 
     @Transactional
-    public IndexDataResponse saveData(IndexDataCreateRequest createRequest) {
-        Long indexInfoId = createRequest.indexInfoId();
+    public IndexDataResponse saveData(IndexDataCreateCommand createCommand) {
+        Long indexInfoId = createCommand.indexInfoId();
         IndexInformation indexInformation = indexInformationService.findById(indexInfoId);
-        IndexData savedIndexData = indexDataService.createdByUser(createRequest, indexInformation);
+        IndexData savedIndexData = indexDataService.createData(createCommand, indexInformation);
 
         return IndexDataResponse.toDto(savedIndexData);
     }
@@ -29,6 +30,12 @@ public class IndexDataApplication {
     public IndexDataResponse findById(Long id) {
         IndexData indexData = indexDataService.findById(id);
 
+        return IndexDataResponse.toDto(indexData);
+    }
+
+    @Transactional
+    public IndexDataResponse update(Long id, IndexDataUpdateCommand updateCommand) {
+        IndexData indexData = indexDataService.update(id, updateCommand);
         return IndexDataResponse.toDto(indexData);
     }
 

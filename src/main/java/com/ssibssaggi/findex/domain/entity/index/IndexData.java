@@ -1,7 +1,5 @@
 package com.ssibssaggi.findex.domain.entity.index;
 
-import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
-import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -47,65 +45,82 @@ public class IndexData {
     private IndexInformation indexInformation;
 
     public static IndexData createWithOpenApi(
-            IndexInformation indexInformation,
-            LocalDate baseDate,
-            BigDecimal marketPrice,
-            BigDecimal closingPrice,
-            BigDecimal highPrice,
-            BigDecimal lowPrice,
-            BigDecimal versus,
-            BigDecimal fluctuationRate,
-            Long tradingQuantity,
-            Long tradingPrice,
-            Long marketTotalAmount
+        IndexInformation indexInformation,
+        LocalDate baseDate,
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount
     ) {
         return new IndexData(
-                null,
-                baseDate,
-                SourceType.OPEN_API,
-                marketPrice,
-                closingPrice,
-                highPrice,
-                lowPrice,
-                versus,
-                fluctuationRate,
-                tradingQuantity,
-                tradingPrice,
-                marketTotalAmount,
-                indexInformation
+            null,
+            baseDate,
+            SourceType.OPEN_API,
+            marketPrice,
+            closingPrice,
+            highPrice,
+            lowPrice,
+            versus,
+            fluctuationRate,
+            tradingQuantity,
+            tradingPrice,
+            marketTotalAmount,
+            indexInformation
         );
     }
 
-    public static IndexData create (IndexDataCreateRequest createRequest, IndexInformation indexInformation, SourceType sourceType) {
+    public static IndexData createWithUser(
+        LocalDate baseDate,
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount,
+        IndexInformation indexInformation) {
         IndexData entity = new IndexData();
-        entity.baseDate = createRequest.baseDate();
-        entity.sourceType = sourceType;
-        entity.marketPrice = createRequest.marketPrice();
-        entity.closingPrice = createRequest.closingPrice();
-        entity.highPrice = createRequest.highPrice();
-        entity.lowPrice = createRequest.lowPrice();
-        entity.versus = createRequest.versus();
-        entity.fluctuationRate = createRequest.fluctuationRate();
-        entity.tradingQuantity = createRequest.tradingQuantity();
-        entity.tradingPrice = createRequest.tradingPrice();
-        entity.marketTotalAmount = createRequest.marketTotalAmount();
+        entity.baseDate = baseDate;
+        entity.sourceType = SourceType.USER;
+        entity.marketPrice = marketPrice;
+        entity.closingPrice = closingPrice;
+        entity.highPrice = highPrice;
+        entity.lowPrice = lowPrice;
+        entity.versus = versus;
+        entity.fluctuationRate = fluctuationRate;
+        entity.tradingQuantity = tradingQuantity;
+        entity.tradingPrice = tradingPrice;
+        entity.marketTotalAmount = marketTotalAmount;
         entity.indexInformation = indexInformation;
         return entity;
     }
 
-    public void update(IndexDataUpdateRequest updateRequest, IndexInformation indexInformation,
-        SourceType sourceType) {
-        this.baseDate = updateRequest.baseDate();
-        this.marketPrice = updateRequest.marketPrice();
-        this.closingPrice = updateRequest.closingPrice();
-        this.highPrice = updateRequest.highPrice();
-        this.lowPrice = updateRequest.lowPrice();
-        this.versus = updateRequest.versus();
-        this.fluctuationRate = updateRequest.fluctuationRate();
-        this.tradingQuantity = updateRequest.tradingQuantity();
-        this.tradingPrice = updateRequest.tradingPrice();
-        this.marketTotalAmount = updateRequest.marketTotalAmount();
-        this.indexInformation = indexInformation;
-        this.sourceType = sourceType;
+    public void update(
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount) {
+        this.marketPrice = marketPrice;
+        this.closingPrice = closingPrice;
+        this.highPrice = highPrice;
+        this.lowPrice = lowPrice;
+        this.versus = versus;
+        this.fluctuationRate = fluctuationRate;
+        this.tradingQuantity = tradingQuantity;
+        this.tradingPrice = tradingPrice;
+        this.marketTotalAmount = marketTotalAmount;
+        this.sourceType = SourceType.USER;
     }
 }

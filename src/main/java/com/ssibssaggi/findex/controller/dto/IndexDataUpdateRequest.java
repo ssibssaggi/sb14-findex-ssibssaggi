@@ -1,11 +1,9 @@
 package com.ssibssaggi.findex.controller.dto;
 
+import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-public record IndexDataUpdateRequest (
-    Long indexInfoId,
-    LocalDate baseDate,
+public record IndexDataUpdateRequest(
     BigDecimal marketPrice,
     BigDecimal closingPrice,
     BigDecimal highPrice,
@@ -16,4 +14,18 @@ public record IndexDataUpdateRequest (
     Long tradingPrice,
     Long marketTotalAmount
 ) {
+
+    public IndexDataUpdateCommand toCommand() {
+        return new IndexDataUpdateCommand(
+            marketPrice,
+            closingPrice,
+            highPrice,
+            lowPrice,
+            versus,
+            fluctuationRate,
+            tradingQuantity,
+            tradingPrice,
+            marketTotalAmount
+        );
+    }
 }
