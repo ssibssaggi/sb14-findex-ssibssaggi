@@ -2,15 +2,16 @@ package com.ssibssaggi.findex.domain.entity.index;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,7 +20,6 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"index_classification", "index_name"})
 })
@@ -34,7 +34,14 @@ public class IndexInformation {
     private Float baseIndex;
     private SourceType sourceType;
     private Boolean favorite;
-    private Boolean enabled;
+
+    @ToString.Exclude
+    @OneToOne(
+            mappedBy = "indexInformation",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
+    private AutoSyncConfig autoSyncConfig;
 
     public static IndexInformation createWithUser(
             String indexName,
@@ -52,7 +59,7 @@ public class IndexInformation {
         entity.baseIndex = baseIndex;
         entity.favorite = favorite;
         entity.sourceType = SourceType.USER;
-        entity.enabled = false;
+        entity.initAutoSyncConfig();
         return entity;
     }
 
@@ -63,17 +70,20 @@ public class IndexInformation {
             LocalDate basePointInTime,
             Float baseIndex
     ) {
-        return new IndexInformation(
-                null,
-                indexClassification,
-                indexName,
-                employedItemsCount,
-                basePointInTime,
-                baseIndex,
-                SourceType.OPEN_API,
-                false,
-                false
-        );
+        IndexInformation entity = new IndexInformation();
+        entity.indexClassification = indexClassification;
+        entity.indexName = indexName;
+        entity.employedItemsCount = employedItemsCount;
+        entity.basePointInTime = basePointInTime;
+        entity.baseIndex = baseIndex;
+        entity.sourceType = SourceType.OPEN_API;
+        entity.favorite = false;
+        entity.initAutoSyncConfig();
+        return entity;
+    }
+
+    private void initAutoSyncConfig() {
+        this.autoSyncConfig = AutoSyncConfig.create(this);
     }
 
     public void updateWithUser(
@@ -96,5 +106,10 @@ public class IndexInformation {
         this.employedItemsCount = employedItemsCount;
         this.basePointInTime = basePointInTime;
         this.baseIndex = baseIndex;
+    }
+
+    public IndexInformation updateEnabled(boolean enabled) {
+        autoSyncConfig.updateEnabled(enabled);
+        return this;
     }
 }

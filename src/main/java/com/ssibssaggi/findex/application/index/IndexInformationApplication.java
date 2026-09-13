@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoUpdateCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.AutoSyncConfigDto;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInformationResponse;
@@ -68,5 +69,14 @@ public class IndexInformationApplication {
         );
 
         return pageEntities.map(IndexInformationResponse::of);
+    }
+
+    @Transactional
+    public AutoSyncConfigDto updateAutoSyncConfig(
+            Long id,
+            boolean enabled
+    ) {
+        IndexInformation updated = indexInformationService.updateEnabled(id, enabled);
+        return AutoSyncConfigDto.of(updated);
     }
 }
