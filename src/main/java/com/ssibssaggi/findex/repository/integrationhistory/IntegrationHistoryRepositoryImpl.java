@@ -162,7 +162,7 @@ public class IntegrationHistoryRepositoryImpl implements IntegrationHistoryRepos
         ComparableExpressionBase<?> target = getSortTarget(sortField);
         Order direction = "DESC".equalsIgnoreCase(sortDirection) ? Order.DESC : Order.ASC;
         return new OrderSpecifier<?>[]{
-                new OrderSpecifier<>(direction, target, OrderSpecifier.NullHandling.NullsLast),
+                new OrderSpecifier<>(direction, target),
                 new OrderSpecifier<>(direction, integrationHistory.id)
         };
     }
