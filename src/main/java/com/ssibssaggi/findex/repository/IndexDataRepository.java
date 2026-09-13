@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 
-public interface IndexDataExportRepository extends JpaRepository<IndexData, Long> {
+public interface IndexDataRepository extends JpaRepository<IndexData, Long>, IndexDataCustomRepository {
 
     List<IndexData> findByIndexInformationIdAndBaseDateBetween(
             Long indexInformationId, LocalDate startDate, LocalDate endDate

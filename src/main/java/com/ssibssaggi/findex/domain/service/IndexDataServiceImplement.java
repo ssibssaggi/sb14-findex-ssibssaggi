@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
-import com.ssibssaggi.findex.repository.IndexDataExportRepository;
+import com.ssibssaggi.findex.repository.IndexDataRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,13 +16,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class IndexDataServiceImplement implements IndexDataService {
 
-    private final IndexDataExportRepository indexDataExportRepository;
+    private final IndexDataRepository indexDataRepository;
 
     @Override
     public List<IndexDataExportResponse> findAllForExport(Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate) {
-        return indexDataExportRepository
+        return indexDataRepository
                 .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
                 .stream()
                 .map(this::toResponse)
@@ -50,6 +50,6 @@ public class IndexDataServiceImplement implements IndexDataService {
         List<IndexData> indexData = insertIndexDataCommands.stream()
                 .map(InsertIndexDataCommand::toIndexData)
                 .toList();
-        return indexDataExportRepository.saveAll(indexData);
+        return indexDataRepository.saveAll(indexData);
     }
 }
