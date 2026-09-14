@@ -32,4 +32,9 @@ public interface IndexDataCustomRepository {
     );
 
     List<IndexInfoTargetDate> findTargetDates(LocalDate baseDate, List<Long> indexInfoIds);
+
+    List<IndexData> findByDateAndIndexInfoId(
+            LocalDate targetDate,
+            Long indexInfoId
+    );
 }

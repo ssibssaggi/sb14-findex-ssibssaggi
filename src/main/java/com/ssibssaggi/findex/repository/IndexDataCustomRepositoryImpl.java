@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
@@ -41,7 +42,6 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     public List<IndexInfoTargetDate> findTargetDates(
             LocalDate baseDate, List<Long> indexInfoIds
     ) {
-        System.out.println("================");
         QIndexData indexData = QIndexData.indexData;
 
         return jpaQueryFactory
@@ -63,16 +63,18 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     public List<IndexData> findByDate(LocalDate targetDate, Long indexInfoId, Integer limit) {
         QIndexData indexData = QIndexData.indexData;
 
-        return jpaQueryFactory
-                .select(indexData)
-                .from(indexData)
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
                 .where(
                         indexInfoIdContains(indexInfoId),
                         indexData.baseDate.eq(targetDate)
-                )
-                .orderBy(indexData.closingPrice.desc())
-                .limit(limit)
-                .fetch();
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
     }
 
     // 타겟날짜 기준으로 (일간, 주간, 월간)
@@ -80,19 +82,21 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     public List<IndexData> findByDateAndPeriod(LocalDate today,
             Long indexInfoId,
             PeriodType periodType,
-            Integer limit) {
+            Integer limit
+    ) {
         QIndexData indexData = QIndexData.indexData;
-
-        return jpaQueryFactory
-                .select(indexData)
-                .from(indexData)
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
                 .where(
                         indexInfoIdContains(indexInfoId),
                         performancePeriodCondition(periodType, today)
-                )
-                .orderBy(indexData.closingPrice.desc())
-                .limit(limit)
-                .fetch();
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
     }
 
     @Override
@@ -137,5 +141,22 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
 
             default -> indexData.baseDate.eq(today);
         };
+    }
+
+    @Override
+    public List<IndexData> findByDateAndIndexInfoId(
+            LocalDate targetDate,
+            Long indexInfoId
+    ) {
+        QIndexData indexData = QIndexData.indexData;
+
+        return jpaQueryFactory
+                .select(indexData)
+                .from(indexData)
+                .where(
+                        indexData.indexInformation.id.eq(indexInfoId),
+                        indexData.baseDate.eq(targetDate)
+                )
+                .fetch();
     }
 }
