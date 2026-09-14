@@ -23,6 +23,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     );
 
     //IndexInformation과 BaseDate가 일치하는 데이터 여부 검사
+
     Boolean existsByIndexInformationAndBaseDate(IndexInformation indexInformation, LocalDate baseDate);
 
     //IndexInformation의 id가 일치하는 데이터 DELETE

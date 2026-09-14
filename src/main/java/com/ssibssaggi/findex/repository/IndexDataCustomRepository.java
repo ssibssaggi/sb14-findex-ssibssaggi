@@ -6,12 +6,13 @@ import java.util.Optional;
 
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 
 public interface IndexDataCustomRepository {
 
     Optional<LocalDate> findTargetDate(LocalDate today, Long indexInfoId);
 
-    public List<IndexData> findByDate(
+    List<IndexData> findByDate(
             LocalDate targetDate,
             Long indexInfoId,
             Integer limit
@@ -29,4 +30,6 @@ public interface IndexDataCustomRepository {
             LocalDate startDate,
             LocalDate endDate
     );
+
+    List<IndexInfoTargetDate> findTargetDates(LocalDate baseDate, List<Long> indexInfoIds);
 }

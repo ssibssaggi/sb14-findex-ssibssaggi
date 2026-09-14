@@ -91,7 +91,7 @@ public class IndexDataApplication {
         List<Performance> performances = PerformanceAssembler.assemble(baseDateData, periodData);
 
         return performances.stream().map(performance -> {
-            int rank = performances.indexOf(performance);
+            int rank = performances.indexOf(performance) + 1;
             return IndexPerformanceRankResponse.of(performance, rank);
         }).toList();
     }

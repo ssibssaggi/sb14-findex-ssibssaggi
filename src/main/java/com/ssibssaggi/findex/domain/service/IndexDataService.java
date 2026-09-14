@@ -56,5 +56,5 @@ public interface IndexDataService {
             CursorPaginationCondition cursorPaginationCondition
     );
 
-    List<IndexPerformanceFavoriteResponse> findFavoritePerformance(PeriodType periodType);
+    List<IndexPerformanceFavoriteResponse> findFavoritePerformance(List<Long> informationIds, PeriodType periodType);
 }
