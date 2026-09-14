@@ -12,19 +12,6 @@ public interface IndexDataCustomRepository {
 
     Optional<LocalDate> findTargetDate(LocalDate today, Long indexInfoId);
 
-    List<IndexData> findByDate(
-            LocalDate targetDate,
-            Long indexInfoId,
-            Integer limit
-    );
-
-    List<IndexData> findByDateAndPeriod(
-            LocalDate today,
-            Long indexInfoId,
-            PeriodType periodType,
-            Integer limit
-    );
-
     List<IndexData> findAllByIndexInfoIdAndDateBetween(
             Long indexInfoId,
             LocalDate startDate,
@@ -33,8 +20,42 @@ public interface IndexDataCustomRepository {
 
     List<IndexInfoTargetDate> findTargetDates(LocalDate baseDate, List<Long> indexInfoIds);
 
-    List<IndexData> findByDateAndIndexInfoId(
-            LocalDate targetDate,
+    /**
+     * 특정 기준일의 지수 데이터를 종가 내림차순으로 조회한다.
+     *
+     * @param baseDate    기준일
+     * @param indexInfoId 지수 정보 FK (null이면 전체 지수)
+     * @param limit       최대 조회 건수
+     */
+    List<IndexData> findByBaseDate(
+            LocalDate baseDate,
+            Long indexInfoId,
+            Integer limit
+    );
+
+    /**
+     * 특정 기준일을 기준으로 기간별 지수 데이터를 조회한다.
+     *
+     * @param baseDate    기준일
+     * @param indexInfoId 지수 정보 FK (null이면 전체 지수)
+     * @param periodType  조회 기간 유형
+     * @param limit       최대 조회 건수
+     */
+    List<IndexData> findByBaseDateAndPeriod(
+            LocalDate baseDate,
+            Long indexInfoId,
+            PeriodType periodType,
+            Integer limit
+    );
+
+    /**
+     * 특정 지수의 특정 기준일 데이터를 조회한다.
+     *
+     * @param baseDate    기준일
+     * @param indexInfoId 지수 정보 FK
+     */
+    List<IndexData> findAllByBaseDateAndIndexInfoId(
+            LocalDate baseDate,
             Long indexInfoId
     );
 }

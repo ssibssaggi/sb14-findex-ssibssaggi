@@ -86,7 +86,7 @@ public class IndexDataServiceImplement implements IndexDataService {
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDateAndPeriod(target,
+                .map(target -> indexDataRepository.findByBaseDateAndPeriod(target,
                         indexInfoId,
                         PeriodType.safeValueOf(periodType),
                         limit)
@@ -98,7 +98,7 @@ public class IndexDataServiceImplement implements IndexDataService {
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDate(target, indexInfoId, limit))
+                .map(target -> indexDataRepository.findByBaseDate(target, indexInfoId, limit))
                 .orElse(List.of());
     }
 
@@ -116,9 +116,10 @@ public class IndexDataServiceImplement implements IndexDataService {
             LocalDate targetDate = target.targetDate();
             Long targetInfoId = target.indexInfoId();
 
-            List<IndexData> baseDateData = indexDataRepository.findByDateAndIndexInfoId(targetDate, targetInfoId);
+            List<IndexData> baseDateData = indexDataRepository.findAllByBaseDateAndIndexInfoId(targetDate,
+                    targetInfoId);
 
-            List<IndexData> beforeDatas = indexDataRepository.findByDateAndPeriod(
+            List<IndexData> beforeDatas = indexDataRepository.findByBaseDateAndPeriod(
                     targetDate,
                     targetInfoId,
                     PeriodType.safeValueOf(periodType),

@@ -39,6 +39,7 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
         );
     }
 
+    @Override
     public List<IndexInfoTargetDate> findTargetDates(
             LocalDate baseDate, List<Long> indexInfoIds
     ) {
@@ -57,46 +58,6 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
                 )
                 .groupBy(indexData.indexInformation.id)
                 .fetch();
-    }
-
-    @Override
-    public List<IndexData> findByDate(LocalDate targetDate, Long indexInfoId, Integer limit) {
-        QIndexData indexData = QIndexData.indexData;
-
-        JPAQuery<IndexData> query = jpaQueryFactory
-                .selectFrom(indexData)
-                .where(
-                        indexInfoIdContains(indexInfoId),
-                        indexData.baseDate.eq(targetDate)
-                ).orderBy(indexData.closingPrice.desc());
-
-        if (limit != null) {
-            query.limit(limit);
-        }
-
-        return query.fetch();
-    }
-
-    // 타겟날짜 기준으로 (일간, 주간, 월간)
-    @Override
-    public List<IndexData> findByDateAndPeriod(LocalDate today,
-            Long indexInfoId,
-            PeriodType periodType,
-            Integer limit
-    ) {
-        QIndexData indexData = QIndexData.indexData;
-        JPAQuery<IndexData> query = jpaQueryFactory
-                .selectFrom(indexData)
-                .where(
-                        indexInfoIdContains(indexInfoId),
-                        performancePeriodCondition(periodType, today)
-                ).orderBy(indexData.closingPrice.desc());
-
-        if (limit != null) {
-            query.limit(limit);
-        }
-
-        return query.fetch();
     }
 
     @Override
@@ -144,7 +105,28 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     }
 
     @Override
-    public List<IndexData> findByDateAndIndexInfoId(
+    public List<IndexData> findByBaseDate(
+            LocalDate targetDate,
+            Long indexInfoId,
+            Integer limit) {
+        QIndexData indexData = QIndexData.indexData;
+
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
+                .where(
+                        indexInfoIdContains(indexInfoId),
+                        indexData.baseDate.eq(targetDate)
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
+    }
+
+    @Override
+    public List<IndexData> findAllByBaseDateAndIndexInfoId(
             LocalDate targetDate,
             Long indexInfoId
     ) {
@@ -158,5 +140,26 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
                         indexData.baseDate.eq(targetDate)
                 )
                 .fetch();
+    }
+
+    @Override
+    public List<IndexData> findByBaseDateAndPeriod(LocalDate today,
+            Long indexInfoId,
+            PeriodType periodType,
+            Integer limit
+    ) {
+        QIndexData indexData = QIndexData.indexData;
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
+                .where(
+                        indexInfoIdContains(indexInfoId),
+                        performancePeriodCondition(periodType, today)
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
     }
 }
