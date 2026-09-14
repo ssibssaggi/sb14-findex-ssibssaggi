@@ -198,8 +198,6 @@ public class IndexInformationService {
     }
 
     public List<Long> findFavoriteIndexInfoIds() {
-        return indexInformationRepository.findByFavoriteTrue()
-                .stream()
-                .map(IndexInformation::getId).toList();
+        return indexInformationRepository.findIdsByFavoriteTrue();
     }
 }
