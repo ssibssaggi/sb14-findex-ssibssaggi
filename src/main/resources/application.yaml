@@ -18,3 +18,7 @@ spring:
 
 index-api:
   service-key: ${API_KEY}
+
+app:
+  schedule:
+    auto-sync-cron: ${AUTO_SYNC_CRON}
