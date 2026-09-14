@@ -140,6 +140,7 @@ public class IndexDataServiceImplement implements IndexDataService {
     //                beforePrice
     //        ));
     //    }
+
     private Optional<IndexPerformanceFavoriteResponse> buildResponse(IndexData latest, PeriodType periodType) {
         Long indexInformationId = latest.getIndexInformation().getId();
         LocalDate latestDate = latest.getBaseDate();
