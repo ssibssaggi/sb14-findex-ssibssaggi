@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.FavoriteIndexPerformanceApplication;
+import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
-import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +24,9 @@ public class FavoriteIndexPerformanceController {
     @GetMapping("/api/index-data/performance/favorite") //스웨거를 보면 Get으로 받아온다
     public List<IndexPerformanceFavoriteResponse> getFavoritePerformance(
             @RequestParam(defaultValue = "DAILY")
-            PeriodType periodType
+            String periodType
     ) {
-        return favoriteIndexPerformanceApplication.getFavoritePerformance(periodType);
+        List<Performance> performances = favoriteIndexPerformanceApplication.getFavoritePerformance(periodType);
+        return performances.stream().map(IndexPerformanceFavoriteResponse::of).toList();
     }
 }
