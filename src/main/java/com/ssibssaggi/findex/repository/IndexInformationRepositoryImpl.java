@@ -226,6 +226,17 @@ public class IndexInformationRepositoryImpl implements IndexInformationRepositor
                 .fetchOne();
     }
 
+    @Override
+    public List<Long> findIdsByFavoriteTrue() {
+        QIndexInformation indexInformation = QIndexInformation.indexInformation;
+
+        return jpaQueryFactory
+                .select(indexInformation.id)
+                .from(indexInformation)
+                .where(indexInformation.favorite.eq(true))
+                .fetch();
+    }
+
     private static BooleanExpression enabledEquals(Boolean enabled, QAutoSyncConfig autoSyncConfig) {
         return enabled == null
                 ? null

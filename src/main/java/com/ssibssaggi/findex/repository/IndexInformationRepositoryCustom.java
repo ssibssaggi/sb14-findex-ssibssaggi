@@ -21,4 +21,6 @@ public interface IndexInformationRepositoryCustom {
     );
 
     Long countByEnabled(Long id, Boolean enabled);
+
+    List<Long> findIdsByFavoriteTrue();
 }

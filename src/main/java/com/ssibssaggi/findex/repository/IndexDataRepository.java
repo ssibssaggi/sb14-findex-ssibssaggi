@@ -29,4 +29,12 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     //삭제된 지수 정보 접근을 방지하기 위해 일괄 벌크 삭제
     @Modifying(clearAutomatically = true)
     void deleteByIndexInformationId(Long indexInfoId);
+
+    List<IndexData> findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
 }

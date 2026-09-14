@@ -21,6 +21,7 @@ import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.service.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 import lombok.RequiredArgsConstructor;
 
@@ -91,7 +92,7 @@ public class IndexDataApplication {
         List<Performance> performances = PerformanceAssembler.assemble(baseDateData, periodData);
 
         return performances.stream().map(performance -> {
-            int rank = performances.indexOf(performance);
+            int rank = performances.indexOf(performance) + 1;
             return IndexPerformanceRankResponse.of(performance, rank);
         }).toList();
     }
@@ -118,5 +119,18 @@ public class IndexDataApplication {
                 ma20
 
         );
+    }
+
+    @Transactional
+    public List<Performance> getFavoritePerformance(String periodType) {
+
+        List<Long> favoriteIndexInfoIds = indexInformationService.findFavoriteIndexInfoIds();
+
+        List<IndexDataPair> pairs = indexDataService.findFavoritePerformance(favoriteIndexInfoIds, periodType);
+
+        return pairs.stream()
+                .map(pair -> PerformanceAssembler.assemble(pair.baseDateData(), pair.beforeDatas()))
+                .flatMap(List::stream)
+                .toList();
     }
 }

@@ -24,10 +24,14 @@ import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
+import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 import com.ssibssaggi.findex.repository.IndexDataRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IndexDataServiceImplement implements IndexDataService {
@@ -35,9 +39,11 @@ public class IndexDataServiceImplement implements IndexDataService {
     private final IndexDataRepository indexDataRepository;
 
     @Override
-    public List<IndexDataExportDto> findAllForExport(Long indexInformationId,
+    public List<IndexDataExportDto> findAllForExport(
+            Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate) {
+
         return indexDataRepository
                 .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
                 .stream()
@@ -55,15 +61,17 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
-    public List<IndexData> findPeriodDataByBaseDate(LocalDate baseDate,
+    public List<IndexData> findPeriodDataByBaseDate(
+            LocalDate baseDate,
             Long indexInfoId,
             String periodType,
-            Integer limit) {
+            Integer limit
+    ) {
 
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDateAndPeriod(target,
+                .map(target -> indexDataRepository.findByBaseDateAndPeriod(target,
                         indexInfoId,
                         PeriodType.safeValueOf(periodType),
                         limit)
@@ -75,8 +83,35 @@ public class IndexDataServiceImplement implements IndexDataService {
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDate(target, indexInfoId, limit))
+                .map(target -> indexDataRepository.findByBaseDate(target, indexInfoId, limit))
                 .orElse(List.of());
+    }
+
+    @Override
+    public List<IndexDataPair> findFavoritePerformance(
+            List<Long> informationIds,
+            String periodType
+    ) {
+        LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
+
+        List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
+        System.out.println(targetDatas);
+
+        return targetDatas.stream().map(target -> {
+            LocalDate targetDate = target.targetDate();
+            Long targetInfoId = target.indexInfoId();
+
+            List<IndexData> baseDateData = indexDataRepository.findAllByBaseDateAndIndexInfoId(targetDate,
+                    targetInfoId);
+
+            List<IndexData> beforeDatas = indexDataRepository.findByBaseDateAndPeriod(
+                    targetDate,
+                    targetInfoId,
+                    PeriodType.safeValueOf(periodType),
+                    null
+            );
+            return new IndexDataPair(baseDateData, beforeDatas);
+        }).toList();
     }
 
     //IndexInformationService를 참고하여 OpenApi 메서드 제작
