@@ -12,7 +12,7 @@ import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
 //JpaRepository를 상속받음으로서 DB에 저장
 public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
-        IndexDataCustomRepository {
+        IndexDataCustomRepository, IndexDataRepositoryCustom {
 
     //IndexInformation과 BaseDate에 대해 SELECT 쿼리 전송
     Optional<IndexData> findByIndexInformationAndBaseDate(IndexInformation indexInformation,

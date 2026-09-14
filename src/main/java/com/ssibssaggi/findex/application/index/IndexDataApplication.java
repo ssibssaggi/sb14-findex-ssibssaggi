@@ -11,7 +11,10 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.application.index.support.PerformanceAssembler;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
@@ -57,8 +60,21 @@ public class IndexDataApplication {
     /*
     @Transactional
     public void deletedByInfoId(Long indexInfoId) {
-
     }*/
+
+    @Transactional
+    public CursorPageResult<IndexDataResponse> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    ) {
+        //IndexInformation indexInformation = indexInformationService.findById(indexDataFilterCondition.indexInfoId());
+        CursorPageResult<IndexData> pageEntities = indexDataService.searchDataInfos(
+                indexDataFilterCondition,
+                cursorPaginationCondition
+                //,indexInformation
+        );
+        return pageEntities.map(IndexDataResponse::toDto);
+    }
 
     @Transactional
     public List<IndexPerformanceRankResponse> getPerformanceRanking(
