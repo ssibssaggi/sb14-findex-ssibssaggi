@@ -1,11 +1,11 @@
-package com.ssibssaggi.findex.client.openapi;
+package com.ssibssaggi.findex.client.openapi.dto.indexinfo;
 
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record IndexInfoApiItem(
+public record IndexInfoFetchResult(
         @JsonProperty("idxCsf")
         String indexClassification,
         @JsonProperty("idxNm")

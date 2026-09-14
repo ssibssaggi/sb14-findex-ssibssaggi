@@ -1,6 +1,6 @@
-package com.ssibssaggi.findex.controller.dto;
+package com.ssibssaggi.findex.application.index.dto;
 
-public record IndexInformationUpdateRequest(
+public record IndexInfoUpdateCommand(
         Integer employedItemsCount,
         String basePointInTime,
         Float baseIndex,

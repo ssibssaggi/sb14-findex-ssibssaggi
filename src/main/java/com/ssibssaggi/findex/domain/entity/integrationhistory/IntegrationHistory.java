@@ -49,4 +49,20 @@ public class IntegrationHistory {
                 indexInformation
         );
     }
+
+    public static IntegrationHistory createIndexDataHistory(
+            String worker,
+            LocalDate targetDate,
+            IndexInformation indexInformation
+    ) {
+        return new IntegrationHistory(
+                null,
+                JobType.INDEX_DATA,
+                targetDate,
+                worker,
+                LocalDateTime.now(ZoneId.systemDefault()),
+                IntegrationResult.SUCCESS,
+                indexInformation
+        );
+    }
 }

@@ -2,15 +2,23 @@ package com.ssibssaggi.findex.repository;
 
 import java.util.List;
 
-import com.ssibssaggi.findex.controller.dto.CursorPageCondition;
-import com.ssibssaggi.findex.controller.dto.IndexInfoSearchCondition;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
 public interface IndexInformationRepositoryCustom {
     List<IndexInformation> searchIndexInfos(
-            IndexInfoSearchCondition indexInfoSearchCondition,
-            CursorPageCondition cursorPageCondition
+            IndexInfoFilterCondition indexInfoFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
     );
 
-    Long count(IndexInfoSearchCondition searchCondition);
+    Long count(IndexInfoFilterCondition searchCondition);
+
+    List<IndexInformation> findByAutoSyncConfigEnabled(
+            CursorPaginationCondition paginationCondition,
+            Long indexInfoId,
+            Boolean enabled
+    );
+
+    Long countByEnabled(Long id, Boolean enabled);
 }

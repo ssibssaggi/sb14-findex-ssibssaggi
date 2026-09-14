@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.IndexInformationApplication;
-import com.ssibssaggi.findex.common.dto.PageResponse;
-import com.ssibssaggi.findex.controller.dto.CursorPageCondition;
-import com.ssibssaggi.findex.controller.dto.IndexInfoSearchCondition;
-import com.ssibssaggi.findex.controller.dto.IndexInformationCreateRequest;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.dto.IndexInfoCreateRequest;
+import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
+import com.ssibssaggi.findex.controller.dto.IndexInfoUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexInformationResponse;
 import com.ssibssaggi.findex.controller.dto.IndexInformationSummaryResponse;
-import com.ssibssaggi.findex.controller.dto.IndexInformationUpdateRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public class IndexInformationController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-infos")
-    public PageResponse<IndexInformationResponse> getInfos(
+    public CursorPageResult<IndexInformationResponse> getInfos(
             @RequestParam(required = false) String indexClassification,
             @RequestParam(required = false) String indexName,
             @RequestParam(required = false) Boolean favorite,
@@ -41,27 +41,27 @@ public class IndexInformationController {
             @RequestParam(required = false, defaultValue = "asc") String sortDirection,
             @RequestParam(required = false, defaultValue = "10") Integer size
     ) {
-        IndexInfoSearchCondition indexInfoSearchCondition = new IndexInfoSearchCondition(
+        IndexInfoFilterCondition indexInfoFilterCondition = new IndexInfoFilterCondition(
                 indexClassification,
                 indexName,
                 favorite
         );
-        CursorPageCondition cursorPageCondition = new CursorPageCondition(
+        CursorPaginationCondition cursorPaginationCondition = new CursorPaginationCondition(
                 idAfter,
                 cursor,
                 sortField,
                 sortDirection,
                 size
         );
-        return indexInformationApplication.searchIndexInfos(indexInfoSearchCondition, cursorPageCondition);
+        return indexInformationApplication.searchIndexInfos(indexInfoFilterCondition, cursorPaginationCondition);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/api/index-infos")
     public IndexInformationResponse createIndexInfo(
-            @RequestBody IndexInformationCreateRequest indexInformationCreateRequest
+            @RequestBody IndexInfoCreateRequest indexInfoCreateRequest
     ) {
-        return indexInformationApplication.saveInformation(indexInformationCreateRequest);
+        return indexInformationApplication.saveInformation(indexInfoCreateRequest.toCommand());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -84,9 +84,9 @@ public class IndexInformationController {
     @PatchMapping(value = "/api/index-infos/{id}")
     public IndexInformationResponse updateIndexInfoById(
             @PathVariable Long id,
-            @RequestBody IndexInformationUpdateRequest indexInformationUpdateRequest
+            @RequestBody IndexInfoUpdateRequest indexInfoUpdateRequest
     ) {
-        return indexInformationApplication.update(id, indexInformationUpdateRequest);
+        return indexInformationApplication.update(id, indexInfoUpdateRequest.toCommand());
     }
 
     @ResponseStatus(HttpStatus.OK)
