@@ -6,11 +6,11 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
-import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
-import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.application.index.dto.Performance;
+import com.ssibssaggi.findex.application.index.support.PerformanceAssembler;
 import com.ssibssaggi.findex.domain.service.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +21,15 @@ public class FavoriteIndexPerformanceApplication {
     private final IndexInformationService indexInformationService;
 
     @Transactional
-    public List<IndexPerformanceFavoriteResponse> getFavoritePerformance(PeriodType periodType) {
+    public List<Performance> getFavoritePerformance(String periodType) {
 
-        List<Long> favoriteIndexInfoIds = indexInformationService
-                .getFavoriteTrue().stream()
-                .map(IndexInformation::getId).toList();
+        List<Long> favoriteIndexInfoIds = indexInformationService.findFavoriteIndexInfoIds();
 
-        return indexDataService.findFavoritePerformance(favoriteIndexInfoIds, periodType);
+        List<IndexDataPair> pairs = indexDataService.findFavoritePerformance(favoriteIndexInfoIds, periodType);
+
+        return pairs.stream()
+                .map(pair -> PerformanceAssembler.assemble(pair.baseDateData(), pair.beforeDatas()))
+                .flatMap(List::stream)
+                .toList();
     }
 }

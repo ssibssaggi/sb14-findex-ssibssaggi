@@ -12,10 +12,9 @@ import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
-import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
-import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 public interface IndexDataService {
 
@@ -56,5 +55,5 @@ public interface IndexDataService {
             CursorPaginationCondition cursorPaginationCondition
     );
 
-    List<IndexPerformanceFavoriteResponse> findFavoritePerformance(List<Long> informationIds, PeriodType periodType);
+    List<IndexDataPair> findFavoritePerformance(List<Long> informationIds, String periodType);
 }

@@ -21,10 +21,10 @@ import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
-import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 import com.ssibssaggi.findex.repository.IndexDataRepository;
 
@@ -80,7 +80,8 @@ public class IndexDataServiceImplement implements IndexDataService {
             LocalDate baseDate,
             Long indexInfoId,
             String periodType,
-            Integer limit) {
+            Integer limit
+    ) {
 
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
@@ -101,124 +102,30 @@ public class IndexDataServiceImplement implements IndexDataService {
                 .orElse(List.of());
     }
 
-    //    private Optional<IndexPerformanceFavoriteResponse> buildResponse(IndexData latest, PeriodType periodType) {
-    //        Long indexInformationId = latest.getIndexInformation().getId();
-    //        LocalDate latestDate = latest.getBaseDate();
-    //
-    //        Optional<IndexData> comparisonOpt = switch (periodType) {
-    //            case DAILY -> indexDataRepository
-    //                    .findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(indexInformationId,
-    //                    latestDate);
-    //            case WEEKLY -> indexDataRepository
-    //                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
-    //                            indexInformationId, latestDate.minusWeeks(1));
-    //            case MONTHLY -> indexDataRepository
-    //                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
-    //                            indexInformationId, latestDate.minusMonths(1));
-    //        };
-    //
-    //        if (comparisonOpt.isEmpty()) {
-    //            return Optional.empty();
-    //        }
-    //
-    //        IndexData comparison = comparisonOpt.get();
-    //        BigDecimal currentPrice = latest.getClosingPrice();
-    //        BigDecimal beforePrice = comparison.getClosingPrice();
-    //
-    //
-    //        BigDecimal versus = currentPrice.subtract(beforePrice);
-    //        BigDecimal fluctuationRate = calculateFluctuationRate(currentPrice, beforePrice);
-    //
-    //
-    //        return Optional.of(new IndexPerformanceFavoriteResponse(
-    //                indexInformationId,
-    //                latest.getIndexInformation().getIndexClassification(),
-    //                latest.getIndexInformation().getIndexName(),
-    //                versus,
-    //                fluctuationRate,
-    //                currentPrice,
-    //                beforePrice
-    //        ));
-    //    }
-
-    private Optional<IndexPerformanceFavoriteResponse> buildResponse(IndexData latest, PeriodType periodType) {
-        Long indexInformationId = latest.getIndexInformation().getId();
-        LocalDate latestDate = latest.getBaseDate();
-
-        Optional<IndexData> comparisonOpt = switch (periodType) {
-            case WEEKLY -> indexDataRepository
-                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
-                            indexInformationId, latestDate.minusWeeks(1));
-            case MONTHLY -> indexDataRepository
-                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
-                            indexInformationId, latestDate.minusMonths(1));
-            default -> indexDataRepository
-                    .findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(indexInformationId,
-                            latestDate);
-        };
-
-        if (comparisonOpt.isEmpty()) {
-            return Optional.empty();
-        }
-
-        IndexData comparison = comparisonOpt.get();
-        BigDecimal currentPrice = latest.getClosingPrice();
-        BigDecimal beforePrice = comparison.getClosingPrice();
-
-        BigDecimal versus = currentPrice.subtract(beforePrice);
-        BigDecimal fluctuationRate = calculateFluctuationRate(currentPrice, beforePrice);
-
-        return Optional.of(new IndexPerformanceFavoriteResponse(
-                indexInformationId,
-                latest.getIndexInformation().getIndexClassification(),
-                latest.getIndexInformation().getIndexName(),
-                versus,
-                fluctuationRate,
-                currentPrice,
-                beforePrice
-        ));
-    }
-
-    private BigDecimal calculateFluctuationRate(BigDecimal current, BigDecimal previous) {
-        if (previous.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO;
-        }
-        return current.subtract(previous)
-                .divide(previous, 6, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-                .setScale(2, RoundingMode.HALF_UP);
-    }
-
     @Override
-    public List<IndexPerformanceFavoriteResponse> findFavoritePerformance(
+    public List<IndexDataPair> findFavoritePerformance(
             List<Long> informationIds,
-            PeriodType periodType
+            String periodType
     ) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
 
-        List<IndexInfoTargetDate> indexDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
-        System.out.println(indexDatas);
+        List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
+        System.out.println(targetDatas);
 
-        //        List<IndexData> allFavoriteData = indexDataRepository
-        //                .findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
-        //
-        //        List<IndexData> latestByFavorite = allFavoriteData.stream()
-        //                .collect(Collectors.toMap(
-        //                        d -> d.getIndexInformation().getId(),
-        //                        d -> d,
-        //                        (first, second) -> first,
-        //                        LinkedHashMap::new
-        //                ))
-        //                .values()
-        //                .stream()
-        //                .toList();
-        //
-        //        return latestByFavorite.stream()
-        //                .map(latest -> buildResponse(latest, periodType))
-        //                .filter(Optional::isPresent)
-        //                .map(Optional::get)
-        //                .toList();
-        return null;
+        return targetDatas.stream().map(target -> {
+            LocalDate targetDate = target.targetDate();
+            Long targetInfoId = target.indexInfoId();
+
+            List<IndexData> baseDateData = indexDataRepository.findByDateAndIndexInfoId(targetDate, targetInfoId);
+
+            List<IndexData> beforeDatas = indexDataRepository.findByDateAndPeriod(
+                    targetDate,
+                    targetInfoId,
+                    PeriodType.safeValueOf(periodType),
+                    null
+            );
+            return new IndexDataPair(baseDateData, beforeDatas);
+        }).toList();
     }
 
     //IndexInformationService를 참고하여 OpenApi 메서드 제작

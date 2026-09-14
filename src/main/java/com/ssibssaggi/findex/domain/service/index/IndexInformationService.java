@@ -197,7 +197,9 @@ public class IndexInformationService {
         return indexInformationRepository.countByEnabled(id, enabled);
     }
 
-    public List<IndexInformation> getFavoriteTrue() {
-        return indexInformationRepository.findByFavoriteTrue();
+    public List<Long> findFavoriteIndexInfoIds() {
+        return indexInformationRepository.findByFavoriteTrue()
+                .stream()
+                .map(IndexInformation::getId).toList();
     }
 }
