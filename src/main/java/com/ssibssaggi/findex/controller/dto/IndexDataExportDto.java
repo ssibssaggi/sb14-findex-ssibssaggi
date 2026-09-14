@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
-import com.ssibssaggi.findex.domain.entity.index.SourceType;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import lombok.Getter;
 public class IndexDataExportDto {
 
     @CsvDate("yyyy-MM-dd")
-    @CsvBindByName(column = "날짜")
+    @CsvBindByName(column = "기준일자")
     private LocalDate baseDate;
 
     @CsvBindByName(column = "시가")
@@ -31,14 +30,20 @@ public class IndexDataExportDto {
     @CsvBindByName(column = "저가")
     private BigDecimal lowPrice;
 
-    @CsvBindByName(column = "대비")
+    @CsvBindByName(column = "전일대비등락")
     private BigDecimal versus;
 
     @CsvBindByName(column = "등락률")
     private BigDecimal fluctuationRate;
 
-    @CsvBindByName(column = "소스타입")
-    private SourceType sourceType;
+    @CsvBindByName(column = "거래량")
+    private Long tradingQuantity;
+
+    @CsvBindByName(column = "거래대금")
+    private Long tradingPrice;
+
+    @CsvBindByName(column = "시가총액")
+    private Long marketTotalAmount;
 
     public static IndexDataExportDto from(IndexData indexData) {
         return new IndexDataExportDto(
@@ -49,7 +54,9 @@ public class IndexDataExportDto {
                 indexData.getLowPrice(),
                 indexData.getVersus(),
                 indexData.getFluctuationRate(),
-                indexData.getSourceType()
+                indexData.getTradingQuantity(),
+                indexData.getTradingPrice(),
+                indexData.getMarketTotalAmount()
         );
     }
 }

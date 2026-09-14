@@ -20,7 +20,9 @@ public interface IndexDataService {
     List<IndexDataExportDto> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            String sortField,
+            String sortDirection
     );
 
     List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands);

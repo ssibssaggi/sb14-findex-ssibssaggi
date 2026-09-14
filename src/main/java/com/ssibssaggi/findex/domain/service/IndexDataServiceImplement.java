@@ -42,10 +42,15 @@ public class IndexDataServiceImplement implements IndexDataService {
     public List<IndexDataExportDto> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate) {
-
+            LocalDate endDate,
+            String sortField,
+            String sortDirection) {
         return indexDataRepository
-                .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
+                .findByIndexInformationIdAndBaseDateBetween(indexInformationId,
+                        startDate,
+                        endDate,
+                        sortField,
+                        sortDirection)
                 .stream()
                 .map(IndexDataExportDto::from)
                 .toList();

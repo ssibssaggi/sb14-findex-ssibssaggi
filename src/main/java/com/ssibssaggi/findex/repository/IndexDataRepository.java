@@ -17,10 +17,6 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     Optional<IndexData> findByIndexInformationAndBaseDate(IndexInformation indexInformation,
             LocalDate baseDate);
 
-    List<IndexData> findByIndexInformationIdAndBaseDateBetween(
-            Long indexInformationId, LocalDate startDate, LocalDate endDate
-    );
-
     //IndexInformation과 BaseDate가 일치하는 데이터 여부 검사
     Boolean existsByIndexInformationAndBaseDate(IndexInformation indexInformation,
             LocalDate baseDate);
