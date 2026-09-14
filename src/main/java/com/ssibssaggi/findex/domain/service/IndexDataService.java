@@ -48,8 +48,6 @@ public interface IndexDataService {
 
     void delete(Long id);
 
-    void deleteByIndexInfoId(Long indexInfoId);
-
     List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType);
 
     List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);

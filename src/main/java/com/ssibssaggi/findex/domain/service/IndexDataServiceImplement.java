@@ -204,11 +204,6 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
-    public void deleteByIndexInfoId(Long indexInfoId) {
-        indexDataRepository.deleteByIndexInformationId(indexInfoId);
-    }
-
-    @Override
     public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
         Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);

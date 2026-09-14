@@ -17,7 +17,7 @@ import com.ssibssaggi.findex.domain.entity.index.QIndexData;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class IndexDataRepositoryImpl implements IndexDataRepositoryCustom {
+public class IndexDataSearchRepositoryImpl implements IndexDataSearchRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override

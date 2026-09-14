@@ -57,21 +57,14 @@ public class IndexDataApplication {
         indexDataService.delete(id);
     }
 
-    /*
-    @Transactional
-    public void deletedByInfoId(Long indexInfoId) {
-    }*/
-
     @Transactional
     public CursorPageResult<IndexDataResponse> searchDataInfos(
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     ) {
-        //IndexInformation indexInformation = indexInformationService.findById(indexDataFilterCondition.indexInfoId());
         CursorPageResult<IndexData> pageEntities = indexDataService.searchDataInfos(
                 indexDataFilterCondition,
                 cursorPaginationCondition
-                //,indexInformation
         );
         return pageEntities.map(IndexDataResponse::toDto);
     }

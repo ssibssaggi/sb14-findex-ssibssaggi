@@ -6,7 +6,7 @@ import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 
-public interface IndexDataRepositoryCustom {
+public interface IndexDataSearchRepository {
     List<IndexData> searchIndexDatas(
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
