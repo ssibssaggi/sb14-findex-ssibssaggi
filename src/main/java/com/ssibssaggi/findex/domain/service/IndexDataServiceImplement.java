@@ -256,4 +256,9 @@ public class IndexDataServiceImplement implements IndexDataService {
             default -> baseDate.minusMonths(1);
         };
     }
+
+    @Override
+    public Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation) {
+        return indexDataRepository.findLatestBaseDate(indexInformation);
+    }
 }
