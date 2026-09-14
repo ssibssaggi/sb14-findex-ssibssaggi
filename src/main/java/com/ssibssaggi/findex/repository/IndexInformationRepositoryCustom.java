@@ -13,4 +13,12 @@ public interface IndexInformationRepositoryCustom {
     );
 
     Long count(IndexInfoFilterCondition searchCondition);
+
+    List<IndexInformation> findByAutoSyncConfigEnabled(
+            CursorPaginationCondition paginationCondition,
+            Long indexInfoId,
+            Boolean enabled
+    );
+
+    Long countByEnabled(Long id, Boolean enabled);
 }

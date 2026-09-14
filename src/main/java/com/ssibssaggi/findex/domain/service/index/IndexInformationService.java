@@ -152,7 +152,7 @@ public class IndexInformationService {
                 .totalElements(totalElements)
                 .hasNext(hashNext)
                 .build();
-        
+
         return CursorPageResult.of(content, pageMeta);
     }
 
@@ -170,5 +170,30 @@ public class IndexInformationService {
 
     public List<IndexInformation> findAllByIds(List<Long> ids) {
         return indexInformationRepository.findAllById(ids);
+    }
+
+    public IndexInformation updateEnabled(Long id, boolean enabled) {
+        IndexInformation updating = indexInformationRepository.findById(id)
+                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
+                        HttpStatus.NOT_FOUND,
+                        "요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
+
+        return updating.updateEnabled(enabled);
+    }
+
+    public List<IndexInformation> searchAutoSyncConfig(
+            Long indexInfoId,
+            Boolean enabled,
+            CursorPaginationCondition paginationCondition
+    ) {
+        return indexInformationRepository.findByAutoSyncConfigEnabled(
+                paginationCondition,
+                indexInfoId,
+                enabled
+        );
+    }
+
+    public Long countByEnabled(Long id, Boolean enabled) {
+        return indexInformationRepository.countByEnabled(id, enabled);
     }
 }

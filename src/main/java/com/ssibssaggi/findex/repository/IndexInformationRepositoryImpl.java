@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
+import com.ssibssaggi.findex.domain.entity.index.QAutoSyncConfig;
 import com.ssibssaggi.findex.domain.entity.index.QIndexInformation;
 
 import lombok.RequiredArgsConstructor;
@@ -130,5 +131,122 @@ public class IndexInformationRepositoryImpl implements IndexInformationRepositor
             case "employedItemsCount" -> indexInformation.employedItemsCount;
             default -> indexInformation.indexClassification;
         };
+    }
+
+    @Override
+    public List<IndexInformation> findByAutoSyncConfigEnabled(
+            CursorPaginationCondition paginationCondition,
+            Long indexInfoId,
+            Boolean enabled
+    ) {
+        QIndexInformation indexInformation = QIndexInformation.indexInformation;
+        return jpaQueryFactory
+                .selectFrom(indexInformation)
+                .where(
+                        indexInfoIdEquals(indexInfoId, indexInformation),
+                        enabledEquals(enabled, indexInformation),
+                        autoSyncCursorCondition(paginationCondition.idAfter(),
+                                paginationCondition.cursor(),
+                                paginationCondition.sortField(),
+                                paginationCondition.sortDirection())
+                )
+                .orderBy(
+                        createAutoSyncOrderSpecifiers(
+                                paginationCondition.sortField(),
+                                paginationCondition.sortDirection()
+                        )
+                )
+                .limit(paginationCondition.size() + 1)
+                .fetch();
+    }
+
+    private BooleanExpression autoSyncCursorCondition(
+            Long lastId,
+            String lastSortValue,
+            String sortField,
+            String sortDirection
+    ) {
+        if (lastSortValue == null) {
+            return null;
+        }
+
+        QIndexInformation indexInformation = QIndexInformation.indexInformation;
+        boolean isDesc = "DESC".equalsIgnoreCase(sortDirection);
+        boolean enabled = Boolean.getBoolean(lastSortValue);
+
+        return switch (sortField) {
+            case "enabled" -> isDesc
+                    ? indexInformation.autoSyncConfig.enabled.lt(enabled)
+                    .or(indexInformation.autoSyncConfig.enabled.eq(enabled).and(indexInformation.id.lt(lastId)))
+                    : indexInformation.autoSyncConfig.enabled.gt(enabled)
+                            .or(indexInformation.autoSyncConfig.enabled.eq(enabled)
+                                    .and(indexInformation.id.gt(lastId)));
+            case "indexInfo.indexName" -> isDesc ? indexInformation.indexName.lt(lastSortValue)
+                    .or(indexInformation.indexName.eq(lastSortValue)
+                            .and(indexInformation.id.lt(lastId)))
+                    : indexInformation.indexName.gt(lastSortValue)
+                            .or(indexInformation.indexName.eq(lastSortValue)
+                                    .and(indexInformation.id.gt(lastId)));
+            default -> isDesc ? indexInformation.id.lt(lastId) : indexInformation.id.gt(lastId);
+        };
+    }
+
+    // 정렬 (OrderBy)
+    private OrderSpecifier<?>[] createAutoSyncOrderSpecifiers(String sortField, String sortDirection) {
+        ComparableExpressionBase<?> target = getAutoSyncSortTarget(sortField);
+        Order direction = "DESC".equalsIgnoreCase(sortDirection) ? Order.DESC : Order.ASC;
+        QIndexInformation indexInformation = QIndexInformation.indexInformation;
+
+        return new OrderSpecifier<?>[]{
+                new OrderSpecifier<>(direction, target),
+                new OrderSpecifier<>(direction, indexInformation.id)
+        };
+    }
+
+    private ComparableExpressionBase<?> getAutoSyncSortTarget(String sortField) {
+        QIndexInformation indexInformation = QIndexInformation.indexInformation;
+
+        return switch (sortField) {
+            case "enabled" -> indexInformation.autoSyncConfig.enabled;
+            case "indexInfo.indexName" -> indexInformation.indexName;
+            default -> indexInformation.indexName;
+        };
+    }
+
+    @Override
+    public Long countByEnabled(Long id, Boolean enabled) {
+        QAutoSyncConfig autoSyncConfig = QAutoSyncConfig.autoSyncConfig;
+        return jpaQueryFactory
+                .select(autoSyncConfig.count())
+                .from(autoSyncConfig)
+                .where(
+                        indexInfoIdEquals(id, autoSyncConfig),
+                        enabledEquals(enabled, autoSyncConfig)
+                )
+                .fetchOne();
+    }
+
+    private static BooleanExpression enabledEquals(Boolean enabled, QAutoSyncConfig autoSyncConfig) {
+        return enabled == null
+                ? null
+                : autoSyncConfig.enabled.eq(enabled);
+    }
+
+    private static BooleanExpression enabledEquals(Boolean enabled, QIndexInformation indexInformation) {
+        return enabled == null
+                ? null
+                : indexInformation.autoSyncConfig.enabled.eq(enabled);
+    }
+
+    private static BooleanExpression indexInfoIdEquals(Long indexInfoId, QAutoSyncConfig autoSyncConfig) {
+        return indexInfoId == null
+                ? null
+                : autoSyncConfig.indexInformation.id.eq(indexInfoId);
+    }
+
+    private static BooleanExpression indexInfoIdEquals(Long indexInfoId, QIndexInformation indexInformation) {
+        return indexInfoId == null
+                ? null
+                : indexInformation.id.eq(indexInfoId);
     }
 }
