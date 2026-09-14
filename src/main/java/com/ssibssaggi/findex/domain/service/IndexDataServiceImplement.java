@@ -15,8 +15,12 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
@@ -200,11 +204,6 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
-    public void deleteByIndexInfoId(Long indexInfoId) {
-        indexDataRepository.deleteByIndexInformationId(indexInfoId);
-    }
-
-    @Override
     public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
         Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
@@ -254,6 +253,59 @@ public class IndexDataServiceImplement implements IndexDataService {
             case QUARTERLY -> baseDate.minusMonths(3);
             case YEARLY -> baseDate.minusYears(1);
             default -> baseDate.minusMonths(1);
+        };
+    }
+
+    @Override
+    public CursorPageResult<IndexData> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    ) {
+
+        List<IndexData> entities = indexDataRepository.searchIndexDatas(indexDataFilterCondition,
+                cursorPaginationCondition);
+        Long totalElements = indexDataRepository.count(indexDataFilterCondition);
+
+        Long nextIdAfter = null;
+        String nextCursor = null;
+        Boolean hashNext = entities.size() > cursorPaginationCondition.size();
+
+        List<IndexData> content = entities.subList(0,
+                Math.min(entities.size(), cursorPaginationCondition.size()));
+
+        if (!entities.isEmpty()) {
+            IndexData lastEntity = content.get(content.size() - 1);
+            nextIdAfter = lastEntity.getId();
+            nextCursor = this.getLastSortValue(cursorPaginationCondition.sortField(), lastEntity);
+        }
+
+        PageMeta pageMeta = PageMeta.builder()
+                .nextCursor(nextCursor)
+                .nextIdAfter(nextIdAfter)
+                .size(cursorPaginationCondition.size())
+                .totalElements(totalElements)
+                .hasNext(hashNext)
+                .build();
+
+        return CursorPageResult.of(content, pageMeta);
+    }
+
+    private String getLastSortValue(
+            String sortField,
+            IndexData indexData
+    ) {
+        return switch (sortField) {
+            case "baseDate" -> indexData.getBaseDate().toString();
+            case "marketPrice" -> indexData.getMarketPrice().toString();
+            case "closingPrice" -> indexData.getClosingPrice().toString();
+            case "highPrice" -> indexData.getHighPrice().toString();
+            case "lowPrice" -> indexData.getLowPrice().toString();
+            case "versus" -> indexData.getVersus().toString();
+            case "fluctuation" -> indexData.getFluctuationRate().toString();
+            case "tradingQuantity" -> indexData.getTradingQuantity().toString();
+            case "tradingPrice" -> indexData.getTradingPrice().toString();
+            case "marketTotalAmount" -> indexData.getMarketTotalAmount().toString();
+            default -> null;
         };
     }
 }

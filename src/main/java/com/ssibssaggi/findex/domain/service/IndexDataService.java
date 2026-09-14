@@ -8,7 +8,10 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
@@ -45,9 +48,12 @@ public interface IndexDataService {
 
     void delete(Long id);
 
-    void deleteByIndexInfoId(Long indexInfoId);
-
     List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType);
 
     List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);
+
+    CursorPageResult<IndexData> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    );
 }

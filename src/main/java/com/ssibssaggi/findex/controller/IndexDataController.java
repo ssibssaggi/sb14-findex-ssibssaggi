@@ -1,5 +1,6 @@
 package com.ssibssaggi.findex.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.IndexDataApplication;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
@@ -27,6 +31,35 @@ import lombok.RequiredArgsConstructor;
 public class IndexDataController {
 
     private final IndexDataApplication indexDataApplication;
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/api/index-data")
+    public CursorPageResult<IndexDataResponse> getInfos(
+            @RequestParam(required = false) Long indexInfoId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) Long idAfter,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false, defaultValue = "baseDate") String sortField,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection,
+            @RequestParam(required = false, defaultValue = "10") Integer size
+    ) {
+
+        IndexDataFilterCondition indexDataFilterCondition = new IndexDataFilterCondition(
+                indexInfoId,
+                startDate,
+                endDate
+        );
+        CursorPaginationCondition cursorPaginationCondition = new CursorPaginationCondition(
+                idAfter,
+                cursor,
+                sortField,
+                sortDirection,
+                size
+        );
+        return indexDataApplication.searchDataInfos(indexDataFilterCondition,
+                cursorPaginationCondition);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/api/index-data")
