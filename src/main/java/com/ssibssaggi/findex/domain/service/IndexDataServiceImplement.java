@@ -368,7 +368,6 @@ public class IndexDataServiceImplement implements IndexDataService {
                     .divide(new BigDecimal(windowSize),
                             2,
                             RoundingMode.HALF_UP); // windowSize로 나눔, 소수 2자리, 반올림
-            System.out.println("value : " + value);
             result.add(DataPoints.of(currentDate, value));
         }
 
