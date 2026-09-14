@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.IndexDataApplication;
+import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
@@ -22,6 +23,7 @@ import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
+import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -103,5 +105,15 @@ public class IndexDataController {
     ) {
 
         return indexDataApplication.getIndexChartData(id, periodType);
+    }
+
+    @ResponseStatus(HttpStatus.OK) // 스웨거를 보면 상태코드가 200이므로 HttpStatus.OK
+    @GetMapping("/api/index-data/performance/favorite") //스웨거를 보면 Get으로 받아온다
+    public List<IndexPerformanceFavoriteResponse> getFavoritePerformance(
+            @RequestParam(defaultValue = "DAILY")
+            String periodType
+    ) {
+        List<Performance> performances = indexDataApplication.getFavoritePerformance(periodType);
+        return performances.stream().map(IndexPerformanceFavoriteResponse::of).toList();
     }
 }

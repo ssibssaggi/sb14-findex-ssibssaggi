@@ -14,6 +14,7 @@ import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 public interface IndexDataService {
 
@@ -37,14 +38,11 @@ public interface IndexDataService {
     List<IndexData> upsertDataByIndexInformationAndBaseDate(
             List<IndexDataFetchResult> commands);
 
-    IndexData createData(IndexDataCreateCommand createCommand,
-            IndexInformation indexInformation);
+    IndexData createData(IndexDataCreateCommand createCommand, IndexInformation indexInformation);
 
     IndexData findById(Long id);
 
-    IndexData update(
-            Long id, IndexDataUpdateCommand updateCommand
-    );
+    IndexData update(Long id, IndexDataUpdateCommand updateCommand);
 
     void delete(Long id);
 
@@ -56,4 +54,6 @@ public interface IndexDataService {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     );
+
+    List<IndexDataPair> findFavoritePerformance(List<Long> informationIds, String periodType);
 }

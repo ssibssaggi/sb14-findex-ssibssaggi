@@ -4,11 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.entity.index.QIndexData;
+import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,38 +40,23 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
     }
 
     @Override
-    public List<IndexData> findByDate(LocalDate targetDate, Long indexInfoId, Integer limit) {
+    public List<IndexInfoTargetDate> findTargetDates(
+            LocalDate baseDate, List<Long> indexInfoIds
+    ) {
         QIndexData indexData = QIndexData.indexData;
 
         return jpaQueryFactory
-                .select(indexData)
+                .select(Projections.constructor(
+                        IndexInfoTargetDate.class,
+                        indexData.indexInformation.id,
+                        indexData.baseDate.max()
+                ))
                 .from(indexData)
                 .where(
-                        indexInfoIdContains(indexInfoId),
-                        indexData.baseDate.eq(targetDate)
+                        indexData.indexInformation.id.in(indexInfoIds),
+                        indexData.baseDate.loe(baseDate)
                 )
-                .orderBy(indexData.closingPrice.desc())
-                .limit(limit)
-                .fetch();
-    }
-
-    // 타겟날짜 기준으로 (일간, 주간, 월간)
-    @Override
-    public List<IndexData> findByDateAndPeriod(LocalDate today,
-            Long indexInfoId,
-            PeriodType periodType,
-            Integer limit) {
-        QIndexData indexData = QIndexData.indexData;
-
-        return jpaQueryFactory
-                .select(indexData)
-                .from(indexData)
-                .where(
-                        indexInfoIdContains(indexInfoId),
-                        performancePeriodCondition(periodType, today)
-                )
-                .orderBy(indexData.closingPrice.desc())
-                .limit(limit)
+                .groupBy(indexData.indexInformation.id)
                 .fetch();
     }
 
@@ -114,5 +102,64 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
 
             default -> indexData.baseDate.eq(today);
         };
+    }
+
+    @Override
+    public List<IndexData> findByBaseDate(
+            LocalDate targetDate,
+            Long indexInfoId,
+            Integer limit) {
+        QIndexData indexData = QIndexData.indexData;
+
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
+                .where(
+                        indexInfoIdContains(indexInfoId),
+                        indexData.baseDate.eq(targetDate)
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
+    }
+
+    @Override
+    public List<IndexData> findAllByBaseDateAndIndexInfoId(
+            LocalDate targetDate,
+            Long indexInfoId
+    ) {
+        QIndexData indexData = QIndexData.indexData;
+
+        return jpaQueryFactory
+                .select(indexData)
+                .from(indexData)
+                .where(
+                        indexData.indexInformation.id.eq(indexInfoId),
+                        indexData.baseDate.eq(targetDate)
+                )
+                .fetch();
+    }
+
+    @Override
+    public List<IndexData> findByBaseDateAndPeriod(LocalDate today,
+            Long indexInfoId,
+            PeriodType periodType,
+            Integer limit
+    ) {
+        QIndexData indexData = QIndexData.indexData;
+        JPAQuery<IndexData> query = jpaQueryFactory
+                .selectFrom(indexData)
+                .where(
+                        indexInfoIdContains(indexInfoId),
+                        performancePeriodCondition(periodType, today)
+                ).orderBy(indexData.closingPrice.desc());
+
+        if (limit != null) {
+            query.limit(limit);
+        }
+
+        return query.fetch();
     }
 }
