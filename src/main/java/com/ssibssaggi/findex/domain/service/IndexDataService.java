@@ -55,4 +55,7 @@ public interface IndexDataService {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     );
+
+    void deleteByIndexInfoId(Long indexInfoId);
 }
+

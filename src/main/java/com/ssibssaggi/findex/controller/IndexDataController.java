@@ -40,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 public class IndexDataController {
 
     private final IndexDataService indexDataService;
+    private final IndexDataApplication indexDataApplication;
 
     @GetMapping("/api/index-data/export/csv")
     public void export(
@@ -64,8 +65,6 @@ public class IndexDataController {
             beanToCsv.write(exportData);
         }
     }
-
-    private final IndexDataApplication indexDataApplication;
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-data")
@@ -136,7 +135,6 @@ public class IndexDataController {
             @PathVariable Long id,
             @RequestParam String periodType
     ) {
-
         return indexDataApplication.getIndexChartData(id, periodType);
     }
 }

@@ -34,6 +34,7 @@ public class IndexDataServiceImplement implements IndexDataService {
 
     private final IndexDataRepository indexDataRepository;
 
+    @Override
     public List<IndexDataExportDto> findAllForExport(Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate) {
@@ -188,6 +189,11 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
+    public void deleteByIndexInfoId(Long indexInfoId) {
+        indexDataRepository.deleteByIndexInformationId(indexInfoId);
+    }
+
+    @Override
     public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
         Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
@@ -225,7 +231,6 @@ public class IndexDataServiceImplement implements IndexDataService {
                     .divide(new BigDecimal(windowSize),
                             2,
                             RoundingMode.HALF_UP); // windowSize로 나눔, 소수 2자리, 반올림
-            System.out.println("value : " + value);
             result.add(DataPoints.of(currentDate, value));
         }
 
@@ -245,7 +250,6 @@ public class IndexDataServiceImplement implements IndexDataService {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     ) {
-
         List<IndexData> entities = indexDataRepository.searchIndexDatas(indexDataFilterCondition,
                 cursorPaginationCondition);
         Long totalElements = indexDataRepository.count(indexDataFilterCondition);
@@ -293,3 +297,5 @@ public class IndexDataServiceImplement implements IndexDataService {
         };
     }
 }
+
+
