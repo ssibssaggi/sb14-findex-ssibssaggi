@@ -2,6 +2,7 @@ package com.ssibssaggi.findex.domain.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
@@ -50,4 +51,6 @@ public interface IndexDataService {
     List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType);
 
     List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);
+
+    Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation);
 }

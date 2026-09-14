@@ -1,6 +1,7 @@
 package com.ssibssaggi.findex.client.openapi;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
@@ -17,6 +18,18 @@ public record IndexDataFetchQuery(
                 indexInformation,
                 baseDateFrom,
                 baseDateTo
+        );
+    }
+
+    public static IndexDataFetchQuery fromLastFetchedDate(
+            IndexInformation indexInformation,
+            LocalDate lastFetchedDate
+    ) {
+        LocalDate yesterday = LocalDate.now(ZoneId.systemDefault()).minusDays(1L);
+        return new IndexDataFetchQuery(
+                indexInformation,
+                lastFetchedDate.plusDays(1),
+                yesterday
         );
     }
 

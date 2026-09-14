@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
+import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.entity.index.QIndexData;
 
@@ -114,5 +115,16 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
 
             default -> indexData.baseDate.eq(today);
         };
+    }
+
+    @Override
+    public Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation) {
+        QIndexData indexData = QIndexData.indexData;
+        LocalDate latestBaseDate = jpaQueryFactory
+                .select(indexData.baseDate.max())
+                .from(indexData)
+                .where(indexData.indexInformation.eq(indexInformation))
+                .fetchOne();
+        return Optional.ofNullable(latestBaseDate);
     }
 }
