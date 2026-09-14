@@ -1,14 +1,5 @@
 package com.ssibssaggi.findex.domain.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
@@ -17,13 +8,26 @@ import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
+import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.repository.IndexDataRepository;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IndexDataServiceImplement implements IndexDataService {
@@ -31,9 +35,11 @@ public class IndexDataServiceImplement implements IndexDataService {
     private final IndexDataRepository indexDataRepository;
 
     @Override
-    public List<IndexDataExportResponse> findAllForExport(Long indexInformationId,
+    public List<IndexDataExportResponse> findAllForExport(
+            Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate) {
+
         return indexDataRepository
                 .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
                 .stream()
@@ -66,7 +72,8 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
-    public List<IndexData> findPeriodDataByBaseDate(LocalDate baseDate,
+    public List<IndexData> findPeriodDataByBaseDate(
+            LocalDate baseDate,
             Long indexInfoId,
             String periodType,
             Integer limit) {
@@ -88,6 +95,80 @@ public class IndexDataServiceImplement implements IndexDataService {
         return targetDate
                 .map(target -> indexDataRepository.findByDate(target, indexInfoId, limit))
                 .orElse(List.of());
+
+    }
+
+
+//    private Optional<IndexPerformanceFavoriteResponse> buildResponse(IndexData latest, PeriodType periodType) {
+//        Long indexInformationId = latest.getIndexInformation().getId();
+//        LocalDate latestDate = latest.getBaseDate();
+//
+//        Optional<IndexData> comparisonOpt = switch (periodType) {
+//            case DAILY -> indexDataRepository
+//                    .findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(indexInformationId, latestDate);
+//            case WEEKLY -> indexDataRepository
+//                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
+//                            indexInformationId, latestDate.minusWeeks(1));
+//            case MONTHLY -> indexDataRepository
+//                    .findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
+//                            indexInformationId, latestDate.minusMonths(1));
+//        };
+//
+//        if (comparisonOpt.isEmpty()) {
+//            return Optional.empty();
+//        }
+//
+//        IndexData comparison = comparisonOpt.get();
+//        BigDecimal currentPrice = latest.getClosingPrice();
+//        BigDecimal beforePrice = comparison.getClosingPrice();
+//
+//
+//        BigDecimal versus = currentPrice.subtract(beforePrice);
+//        BigDecimal fluctuationRate = calculateFluctuationRate(currentPrice, beforePrice);
+//
+//
+//        return Optional.of(new IndexPerformanceFavoriteResponse(
+//                indexInformationId,
+//                latest.getIndexInformation().getIndexClassification(),
+//                latest.getIndexInformation().getIndexName(),
+//                versus,
+//                fluctuationRate,
+//                currentPrice,
+//                beforePrice
+//        ));
+//    }
+
+    private BigDecimal calculateFluctuationRate(BigDecimal current, BigDecimal previous) {
+        if (previous.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return current.subtract(previous)
+                .divide(previous, 6, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public List<IndexPerformanceFavoriteResponse> findFavoritePerformance(PeriodType periodType) {
+        List<IndexData> allFavoriteData = indexDataRepository
+                .findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
+
+        List<IndexData> latestByFavorite = allFavoriteData.stream()
+                .collect(Collectors.toMap(
+                        d -> d.getIndexInformation().getId(),
+                        d -> d,
+                        (first, second) -> first,
+                        LinkedHashMap::new
+                ))
+                .values()
+                .stream()
+                .toList();
+
+        return null;
+//        return latestByFavorite.stream()
+//                .map(latest -> buildResponse(latest, periodType))
+//                .filter(Optional::isPresent)
+//                .map(Optional::get)
+//                .toList();
     }
 
     //IndexInformationService를 참고하여 OpenApi 메서드 제작
@@ -143,7 +224,7 @@ public class IndexDataServiceImplement implements IndexDataService {
 
     @Override
     public IndexData createData(IndexDataCreateCommand createCommand,
-            IndexInformation indexInformation) {
+                                IndexInformation indexInformation) {
         Long indexInfoId = createCommand.indexInfoId();
         LocalDate baseDate = createCommand.baseDate();
 
