@@ -196,4 +196,8 @@ public class IndexInformationService {
     public Long countByEnabled(Long id, Boolean enabled) {
         return indexInformationRepository.countByEnabled(id, enabled);
     }
+
+    public List<IndexInformation> getFavoriteTrue() {
+        return indexInformationRepository.findByFavoriteTrue();
+    }
 }

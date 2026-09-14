@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.entity.index.QIndexData;
+import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,27 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
                         .limit(1)
                         .fetchFirst()
         );
+    }
+
+    public List<IndexInfoTargetDate> findTargetDates(
+            LocalDate baseDate, List<Long> indexInfoIds
+    ) {
+        System.out.println("================");
+        QIndexData indexData = QIndexData.indexData;
+
+        return jpaQueryFactory
+                .select(Projections.constructor(
+                        IndexInfoTargetDate.class,
+                        indexData.indexInformation.id,
+                        indexData.baseDate.max()
+                ))
+                .from(indexData)
+                .where(
+                        indexData.indexInformation.id.in(indexInfoIds),
+                        indexData.baseDate.loe(baseDate)
+                )
+                .groupBy(indexData.indexInformation.id)
+                .fetch();
     }
 
     @Override

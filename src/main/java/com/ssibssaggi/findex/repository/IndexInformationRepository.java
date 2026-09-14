@@ -1,5 +1,6 @@
 package com.ssibssaggi.findex.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,7 @@ public interface IndexInformationRepository
     Optional<IndexInformation> findByIndexClassificationAndIndexName(String indexClassification, String indexName);
 
     Boolean existsByIndexClassificationAndIndexName(String indexClassification, String indexName);
+
+    List<IndexInformation> findByFavoriteTrue();
 }
 

@@ -1,5 +1,8 @@
 package com.ssibssaggi.findex.domain.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
@@ -10,10 +13,6 @@ import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
-
-import java.time.LocalDate;
-import java.util.List;
-
 
 public interface IndexDataService {
 
@@ -33,7 +32,6 @@ public interface IndexDataService {
 
     List<IndexData> findDataByBaseDate(LocalDate baseDate, Long indexInfoId, Integer limit);
 
-
     //IndexInformationService를 참고하여 OpenApi 메서드 제작
     List<IndexData> upsertDataByIndexInformationAndBaseDate(
             List<IndexDataFetchResult> commands);
@@ -52,6 +50,5 @@ public interface IndexDataService {
 
     List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);
 
-    List<IndexPerformanceFavoriteResponse> findFavoritePerformance(PeriodType periodType);
-
+    List<IndexPerformanceFavoriteResponse> findFavoritePerformance(List<Long> informationIds, PeriodType periodType);
 }
