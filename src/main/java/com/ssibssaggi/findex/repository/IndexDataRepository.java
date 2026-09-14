@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -22,6 +23,18 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     );
 
     //IndexInformation과 BaseDate가 일치하는 데이터 여부 검사
-    Boolean existsByIndexInformationAndBaseDate(IndexInformation indexInformation,
-            LocalDate baseDate);
+    Boolean existsByIndexInformationAndBaseDate(IndexInformation indexInformation, LocalDate baseDate);
+
+    //IndexInformation의 id가 일치하는 데이터 DELETE
+    //삭제된 지수 정보 접근을 방지하기 위해 일괄 벌크 삭제
+    @Modifying(clearAutomatically = true)
+    void deleteByIndexInformationId(Long indexInfoId);
+
+    List<IndexData> findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
 }
