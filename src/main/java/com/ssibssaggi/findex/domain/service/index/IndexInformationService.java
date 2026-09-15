@@ -93,11 +93,7 @@ public class IndexInformationService {
                         "요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
     }
 
-    public void delete(Long id) {
-        IndexInformation entity = indexInformationRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
-                        "삭제 요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
+    public void delete(IndexInformation entity) {
         indexInformationRepository.delete(entity);
     }
 

@@ -15,6 +15,7 @@ import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInformationResponse;
 import com.ssibssaggi.findex.controller.dto.IndexInformationSummaryResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
+import com.ssibssaggi.findex.domain.service.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class IndexInformationApplication {
     private final IndexInformationService indexInformationService;
+    private final IndexDataService indexDataService;
 
     @Transactional
     public IndexInformationResponse saveInformation(IndexInfoCreateCommand indexInfoCreateCommand) {
@@ -39,9 +41,11 @@ public class IndexInformationApplication {
 
     @Transactional
     public void deleteById(Long id) {
-        // TODO : IndexData에서 index_information_id 체크하여 삭제하는 로직 추가 필요 (
-        // JPA mappedBy 사용 시 N+1발생하여 서비스 단에서 처리하는것으로 선택)
-        indexInformationService.delete(id);
+
+        IndexInformation information = indexInformationService.findById(id);
+        Long infoId = information.getId();
+        indexDataService.deleteByIndexInfoId(infoId);
+        indexInformationService.delete(information);
     }
 
     @Transactional
