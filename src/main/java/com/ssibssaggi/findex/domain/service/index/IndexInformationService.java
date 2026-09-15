@@ -197,6 +197,10 @@ public class IndexInformationService {
         return indexInformationRepository.countByEnabled(id, enabled);
     }
 
+    public List<IndexInformation> findAllByAutoSyncEnabledIsTrue() {
+        return indexInformationRepository.findAllByAutoSyncConfig_EnabledTrue();
+    }
+
     public List<Long> findFavoriteIndexInfoIds() {
         return indexInformationRepository.findIdsByFavoriteTrue();
     }

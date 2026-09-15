@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
+import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 
@@ -65,6 +66,8 @@ public interface IndexDataCustomRepository {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     );
+
+    Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation);
 
     List<IndexData> findByIndexInformationIdAndBaseDateBetween(
             Long indexInformationId, LocalDate startDate, LocalDate endDate, String sortField, String sortDirection

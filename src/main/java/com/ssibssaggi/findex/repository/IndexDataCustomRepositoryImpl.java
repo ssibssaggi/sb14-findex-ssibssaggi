@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
+import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.entity.index.QIndexData;
 import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
@@ -108,6 +109,17 @@ public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository 
 
             default -> indexData.baseDate.eq(today);
         };
+    }
+
+    @Override
+    public Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation) {
+        QIndexData indexData = QIndexData.indexData;
+        LocalDate latestBaseDate = jpaQueryFactory
+                .select(indexData.baseDate.max())
+                .from(indexData)
+                .where(indexData.indexInformation.eq(indexInformation))
+                .fetchOne();
+        return Optional.ofNullable(latestBaseDate);
     }
 
     @Override

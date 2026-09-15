@@ -1,5 +1,7 @@
 package com.ssibssaggi.findex.application.indexintegration;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -53,13 +55,13 @@ public class IndexIntegrationApplication {
                 ))
                 .toList();
 
-        List<InsertIndexDataCommand> insertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
+        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
                 .stream()
-                .map(InsertIndexDataCommand::from)
+                .map(UpsertIndexDataCommand::from)
                 .toList();
 
         List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .insertIndexData(insertIndexDataCommands)
+                .upsertIndexData(upsertIndexDataCommands)
                 .stream()
                 .map(indexData -> InsertIntegrationHistoryCommand.of(
                         worker,
@@ -71,6 +73,35 @@ public class IndexIntegrationApplication {
         List<IntegrationHistory> integrationHistories = integrationHistoryService.insertIndexDataHistory(
                 insertIntegrationHistoryCommands);
         return SyncJobDto.from(integrationHistories);
+    }
+
+    @Transactional
+    public List<IntegrationHistory> syncAutoSyncEnabledIndexDataWithOpenApi() {
+        List<IndexInformation> autoSyncEnabledIndexInfos = indexInformationService.findAllByAutoSyncEnabledIsTrue();
+
+        List<IndexDataFetchQuery> indexDataFetchQueries = autoSyncEnabledIndexInfos.stream()
+                .map(indexInformation -> {
+                    LocalDate lastFetchedDate = indexDataService.findLatestBaseDate(indexInformation)
+                            .orElse(LocalDate.now(ZoneId.systemDefault()).minusDays(8));
+
+                    return IndexDataFetchQuery.fromLastFetchedDate(indexInformation, lastFetchedDate);
+                })
+                .toList();
+        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
+                .stream()
+                .map(UpsertIndexDataCommand::from)
+                .toList();
+        List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
+                .upsertIndexData(upsertIndexDataCommands)
+                .stream()
+                .map(indexData -> InsertIntegrationHistoryCommand.of(
+                        "System",
+                        indexData.getBaseDate(),
+                        indexData.getIndexInformation()
+                ))
+                .toList();
+
+        return integrationHistoryService.insertIndexDataHistory(insertIntegrationHistoryCommands);
     }
 
     @Transactional

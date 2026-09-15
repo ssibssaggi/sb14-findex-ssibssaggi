@@ -2,11 +2,12 @@ package com.ssibssaggi.findex.domain.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
-import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
+import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
@@ -24,7 +25,7 @@ public interface IndexDataService {
             String sortDirection
     );
 
-    List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands);
+    List<IndexData> upsertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands);
 
     List<IndexData> findPeriodDataByBaseDate(
             LocalDate baseDate,
@@ -58,4 +59,6 @@ public interface IndexDataService {
     void deleteByIndexInfoId(Long indexInfoId);
 
     List<IndexDataPair> findFavoritePerformance(List<Long> informationIds, String periodType);
+
+    Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation);
 }
