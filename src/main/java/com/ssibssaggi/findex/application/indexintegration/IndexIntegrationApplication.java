@@ -2,6 +2,7 @@ package com.ssibssaggi.findex.application.indexintegration;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssibssaggi.findex.client.openapi.IndexDataFetchQuery;
 import com.ssibssaggi.findex.client.openapi.IndexOpenApiClient;
+import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
+import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.SyncJobDto;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -20,7 +23,9 @@ import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
 import com.ssibssaggi.findex.domain.service.integrationhistory.IntegrationHistoryService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IndexIntegrationApplication {
@@ -28,6 +33,7 @@ public class IndexIntegrationApplication {
     private final IndexInformationService indexInformationService;
     private final IntegrationHistoryService integrationHistoryService;
     private final IndexDataService indexDataService;
+    private final IndexDataSyncService indexDataSyncService;
 
     @Transactional
     public List<SyncJobDto> syncIndexInfoWithOpenApi(String worker) {
@@ -55,24 +61,7 @@ public class IndexIntegrationApplication {
                 ))
                 .toList();
 
-        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
-                .stream()
-                .map(UpsertIndexDataCommand::from)
-                .toList();
-
-        List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .upsertIndexData(upsertIndexDataCommands)
-                .stream()
-                .map(indexData -> InsertIntegrationHistoryCommand.of(
-                        worker,
-                        indexData.getBaseDate(),
-                        indexData.getIndexInformation()
-                ))
-                .toList();
-
-        List<IntegrationHistory> integrationHistories = integrationHistoryService.insertIndexDataHistory(
-                insertIntegrationHistoryCommands);
-        return SyncJobDto.from(integrationHistories);
+        return SyncJobDto.from(this.syncIndexData(worker, indexDataFetchQueries));
     }
 
     @Transactional
@@ -87,21 +76,51 @@ public class IndexIntegrationApplication {
                     return IndexDataFetchQuery.fromLastFetchedDate(indexInformation, lastFetchedDate);
                 })
                 .toList();
-        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
+
+        return this.syncIndexData("System", indexDataFetchQueries);
+    }
+
+    private List<IntegrationHistory> syncIndexData(String worker, List<IndexDataFetchQuery> queries) {
+        IndexDataFetchBatchResult fetchResult = fetchIndexData(queries);
+        List<IntegrationHistory> histories = new ArrayList<>();
+
+        // @Transactional
+        List<InsertIntegrationHistoryCommand> failedHistoryCommands = fetchResult.failedQueries().stream()
+                // 응답 데이터의 있던 없던 기간 사이의 각 날짜에 호출 실패를 기록
+                .flatMap(query -> query.baseDateFrom().datesUntil(query.baseDateTo().plusDays(1))
+                        .map(targetDate -> InsertIntegrationHistoryCommand.of(
+                                worker,
+                                targetDate,
+                                query.indexInformation())
+                        )
+                )
+                .toList();
+        histories.addAll(integrationHistoryService.insertFailedIndexDataHistory(failedHistoryCommands));
+
+        // @Transactional
+        List<UpsertIndexDataCommand> upsertIndexDataCommands = fetchResult.successfulResults()
                 .stream()
                 .map(UpsertIndexDataCommand::from)
                 .toList();
-        List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .upsertIndexData(upsertIndexDataCommands)
-                .stream()
-                .map(indexData -> InsertIntegrationHistoryCommand.of(
-                        "System",
-                        indexData.getBaseDate(),
-                        indexData.getIndexInformation()
-                ))
-                .toList();
+        histories.addAll(indexDataSyncService.saveIndexDataWithHistory(worker, upsertIndexDataCommands));
+        return histories;
+    }
 
-        return integrationHistoryService.insertIndexDataHistory(insertIntegrationHistoryCommands);
+    private IndexDataFetchBatchResult fetchIndexData(List<IndexDataFetchQuery> queries) {
+        List<IndexDataFetchResult> results = new ArrayList<>();
+        List<IndexDataFetchQuery> failedQueries = new ArrayList<>();
+
+        for (IndexDataFetchQuery query : queries) {
+            try {
+                results.addAll(indexOpenApiClient.syncIndexData(query));
+            } catch (CustomException e) {
+                failedQueries.add(query);
+                log.warn("[지수 데이터 연동 실패] indexInfoId={}, baseDateFrom={}, baseDateTo={}",
+                        query.indexInformation().getId(), query.baseDateFrom(), query.baseDateTo());
+            }
+        }
+
+        return new IndexDataFetchBatchResult(results, failedQueries);
     }
 
     @Transactional

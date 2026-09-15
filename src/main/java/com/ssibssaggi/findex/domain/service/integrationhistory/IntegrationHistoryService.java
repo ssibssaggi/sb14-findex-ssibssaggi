@@ -3,6 +3,8 @@ package com.ssibssaggi.findex.domain.service.integrationhistory;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssibssaggi.findex.application.indexintegration.InsertIntegrationHistoryCommand;
 import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
@@ -30,6 +32,19 @@ public class IntegrationHistoryService {
     public List<IntegrationHistory> insertIndexDataHistory(List<InsertIntegrationHistoryCommand> commands) {
         List<IntegrationHistory> creating = commands.stream()
                 .map(command -> IntegrationHistory.createIndexDataHistory(
+                        command.worker(),
+                        command.targetDate(),
+                        command.indexInformation()
+                ))
+                .toList();
+
+        return integrationHistoryRepository.saveAll(creating);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<IntegrationHistory> insertFailedIndexDataHistory(List<InsertIntegrationHistoryCommand> commands) {
+        List<IntegrationHistory> creating = commands.stream()
+                .map(command -> IntegrationHistory.createFailedIndexDataHistory(
                         command.worker(),
                         command.targetDate(),
                         command.indexInformation()

@@ -65,4 +65,20 @@ public class IntegrationHistory {
                 indexInformation
         );
     }
+
+    public static IntegrationHistory createFailedIndexDataHistory(
+            String worker,
+            LocalDate targetDate,
+            IndexInformation indexInformation
+    ) {
+        return new IntegrationHistory(
+                null,
+                JobType.INDEX_DATA,
+                targetDate,
+                worker,
+                LocalDateTime.now(ZoneId.systemDefault()),
+                IntegrationResult.FAILED,
+                indexInformation
+        );
+    }
 }
