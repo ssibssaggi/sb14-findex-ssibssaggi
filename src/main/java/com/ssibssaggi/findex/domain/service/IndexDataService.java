@@ -10,18 +10,18 @@ import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 public interface IndexDataService {
-
-    List<IndexDataExportResponse> findAllForExport(
+    List<IndexData> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            String sortField,
+            String sortDirection
     );
 
     List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands);
@@ -54,6 +54,8 @@ public interface IndexDataService {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     );
+
+    void deleteByIndexInfoId(Long indexInfoId);
 
     List<IndexDataPair> findFavoritePerformance(List<Long> informationIds, String periodType);
 }

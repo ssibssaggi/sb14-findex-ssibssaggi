@@ -19,7 +19,6 @@ import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -39,31 +38,19 @@ public class IndexDataServiceImplement implements IndexDataService {
     private final IndexDataRepository indexDataRepository;
 
     @Override
-    public List<IndexDataExportResponse> findAllForExport(
+    public List<IndexData> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate) {
-
+            LocalDate endDate,
+            String sortField,
+            String sortDirection) {
         return indexDataRepository
-                .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
-                .stream()
-                .map(this::toResponse)
-                .toList();
-    }
-
-    private IndexDataExportResponse toResponse(IndexData data) {
-        return new IndexDataExportResponse(
-                data.getBaseDate(),
-                data.getMarketPrice(),
-                data.getClosingPrice(),
-                data.getHighPrice(),
-                data.getLowPrice(),
-                data.getVersus(),
-                data.getFluctuationRate(),
-                data.getTradingQuantity(),
-                data.getTradingPrice(),
-                data.getMarketTotalAmount()
-        );
+                .findByIndexInformationIdAndBaseDateBetween(
+                        indexInformationId,
+                        startDate,
+                        endDate,
+                        sortField,
+                        sortDirection);
     }
 
     // 정의되어있는 repository 이름이 이상한듯?
@@ -239,6 +226,11 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
+    public void deleteByIndexInfoId(Long indexInfoId) {
+        indexDataRepository.deleteByIndexInformationId(indexInfoId);
+    }
+
+    @Override
     public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
         Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
@@ -295,7 +287,6 @@ public class IndexDataServiceImplement implements IndexDataService {
             IndexDataFilterCondition indexDataFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
     ) {
-
         List<IndexData> entities = indexDataRepository.searchIndexDatas(indexDataFilterCondition,
                 cursorPaginationCondition);
         Long totalElements = indexDataRepository.count(indexDataFilterCondition);
@@ -343,3 +334,5 @@ public class IndexDataServiceImplement implements IndexDataService {
         };
     }
 }
+
+

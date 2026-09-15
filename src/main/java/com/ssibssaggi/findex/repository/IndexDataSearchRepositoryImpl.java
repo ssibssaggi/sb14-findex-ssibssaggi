@@ -183,9 +183,22 @@ public class IndexDataSearchRepositoryImpl implements IndexDataSearchRepository 
     }
 
     @Override
+    public List<IndexData> findByIndexInformationIdAndBaseDateBetween(
+            Long indexInformationId, LocalDate startDate, LocalDate endDate, String sortField, String sortDirection) {
+        QIndexData indexData = QIndexData.indexData;
+        return jpaQueryFactory
+                .selectFrom(indexData)
+                .where(
+                        indexInfoIdEquals(indexInformationId),
+                        baseDateBetween(startDate, endDate)
+                )
+                .orderBy(createOrderSpecifiers(sortField, sortDirection))
+                .fetch();
+    }
+
+    @Override
     public Long count(IndexDataFilterCondition searchCondition) {
         QIndexData indexData = QIndexData.indexData;
-
         return jpaQueryFactory
                 .select(indexData.count())
                 .from(indexData)
