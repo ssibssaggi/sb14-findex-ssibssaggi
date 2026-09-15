@@ -1,6 +1,9 @@
 package com.ssibssaggi.findex.controller;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +17,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.index.IndexDataApplication;
+import com.ssibssaggi.findex.application.index.dto.Performance;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
+import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +33,54 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class IndexDataController {
-
     private final IndexDataApplication indexDataApplication;
+
+    @GetMapping("/api/index-data/export/csv")
+    public void export(
+            @RequestParam(required = false) Long indexInformationId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) String sortField,
+            @RequestParam(required = false) String sortDirection,
+            HttpServletResponse response) throws Exception {
+
+        response.setContentType("text/csv");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=index_data.csv");
+
+        indexDataApplication.findAllForExport(
+                indexInformationId, startDate, endDate, sortField, sortDirection, response.getOutputStream()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/api/index-data")
+    public CursorPageResult<IndexDataResponse> getInfos(
+            @RequestParam(required = false) Long indexInfoId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) Long idAfter,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false, defaultValue = "baseDate") String sortField,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection,
+            @RequestParam(required = false, defaultValue = "10") Integer size
+    ) {
+
+        IndexDataFilterCondition indexDataFilterCondition = new IndexDataFilterCondition(
+                indexInfoId,
+                startDate,
+                endDate
+        );
+        CursorPaginationCondition cursorPaginationCondition = new CursorPaginationCondition(
+                idAfter,
+                cursor,
+                sortField,
+                sortDirection,
+                size
+        );
+        return indexDataApplication.searchDataInfos(indexDataFilterCondition,
+                cursorPaginationCondition);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/api/index-data")
@@ -68,7 +122,16 @@ public class IndexDataController {
             @PathVariable Long id,
             @RequestParam String periodType
     ) {
-
         return indexDataApplication.getIndexChartData(id, periodType);
+    }
+
+    @ResponseStatus(HttpStatus.OK) // 스웨거를 보면 상태코드가 200이므로 HttpStatus.OK
+    @GetMapping("/api/index-data/performance/favorite") //스웨거를 보면 Get으로 받아온다
+    public List<IndexPerformanceFavoriteResponse> getFavoritePerformance(
+            @RequestParam(defaultValue = "DAILY")
+            String periodType
+    ) {
+        List<Performance> performances = indexDataApplication.getFavoritePerformance(periodType);
+        return performances.stream().map(IndexPerformanceFavoriteResponse::of).toList();
     }
 }

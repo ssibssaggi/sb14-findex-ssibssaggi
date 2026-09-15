@@ -13,14 +13,9 @@ import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 //JpaRepository를 상속받음으로서 DB에 저장
 public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
         IndexDataCustomRepository {
-
     //IndexInformation과 BaseDate에 대해 SELECT 쿼리 전송
     Optional<IndexData> findByIndexInformationAndBaseDate(IndexInformation indexInformation,
             LocalDate baseDate);
-
-    List<IndexData> findByIndexInformationIdAndBaseDateBetween(
-            Long indexInformationId, LocalDate startDate, LocalDate endDate
-    );
 
     //IndexInformation과 BaseDate가 일치하는 데이터 여부 검사
     Boolean existsByIndexInformationAndBaseDate(IndexInformation indexInformation,
@@ -30,4 +25,12 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     //삭제된 지수 정보 접근을 방지하기 위해 일괄 벌크 삭제
     @Modifying(clearAutomatically = true)
     void deleteByIndexInformationId(Long indexInfoId);
+
+    List<IndexData> findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
+
+    Optional<IndexData> findFirstByIndexInformation_IdAndBaseDateLessThanEqualOrderByBaseDateDesc(
+            Long indexInformationId, LocalDate baseDate);
 }

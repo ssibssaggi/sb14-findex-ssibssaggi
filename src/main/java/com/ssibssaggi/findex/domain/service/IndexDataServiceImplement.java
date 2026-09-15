@@ -15,15 +15,22 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
+import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 import com.ssibssaggi.findex.repository.IndexDataRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IndexDataServiceImplement implements IndexDataService {
@@ -31,14 +38,19 @@ public class IndexDataServiceImplement implements IndexDataService {
     private final IndexDataRepository indexDataRepository;
 
     @Override
-    public List<IndexDataExportResponse> findAllForExport(Long indexInformationId,
+    public List<IndexData> findAllForExport(
+            Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate) {
+            LocalDate endDate,
+            String sortField,
+            String sortDirection) {
         return indexDataRepository
-                .findByIndexInformationIdAndBaseDateBetween(indexInformationId, startDate, endDate)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+                .findByIndexInformationIdAndBaseDateBetween(
+                        indexInformationId,
+                        startDate,
+                        endDate,
+                        sortField,
+                        sortDirection);
     }
 
     @Override
@@ -102,21 +114,6 @@ public class IndexDataServiceImplement implements IndexDataService {
                 ));
     }
 
-    private IndexDataExportResponse toResponse(IndexData data) {
-        return new IndexDataExportResponse(
-                data.getBaseDate(),
-                data.getMarketPrice(),
-                data.getClosingPrice(),
-                data.getHighPrice(),
-                data.getLowPrice(),
-                data.getVersus(),
-                data.getFluctuationRate(),
-                data.getTradingQuantity(),
-                data.getTradingPrice(),
-                data.getMarketTotalAmount()
-        );
-    }
-
     private IndexData updateIndexData(
             IndexData indexData,
             BigDecimal marketPrice,
@@ -171,15 +168,17 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
-    public List<IndexData> findPeriodDataByBaseDate(LocalDate baseDate,
+    public List<IndexData> findPeriodDataByBaseDate(
+            LocalDate baseDate,
             Long indexInfoId,
             String periodType,
-            Integer limit) {
+            Integer limit
+    ) {
 
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDateAndPeriod(target,
+                .map(target -> indexDataRepository.findByBaseDateAndPeriod(target,
                         indexInfoId,
                         PeriodType.safeValueOf(periodType),
                         limit)
@@ -191,8 +190,35 @@ public class IndexDataServiceImplement implements IndexDataService {
         Optional<LocalDate> targetDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return targetDate
-                .map(target -> indexDataRepository.findByDate(target, indexInfoId, limit))
+                .map(target -> indexDataRepository.findByBaseDate(target, indexInfoId, limit))
                 .orElse(List.of());
+    }
+
+    @Override
+    public List<IndexDataPair> findFavoritePerformance(
+            List<Long> informationIds,
+            String periodType
+    ) {
+        LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
+
+        List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
+        System.out.println(targetDatas);
+
+        return targetDatas.stream().map(target -> {
+            LocalDate targetDate = target.targetDate();
+            Long targetInfoId = target.indexInfoId();
+
+            List<IndexData> baseDateData = indexDataRepository.findAllByBaseDateAndIndexInfoId(targetDate,
+                    targetInfoId);
+
+            List<IndexData> beforeDatas = indexDataRepository.findByBaseDateAndPeriod(
+                    targetDate,
+                    targetInfoId,
+                    PeriodType.safeValueOf(periodType),
+                    null
+            );
+            return new IndexDataPair(baseDateData, beforeDatas);
+        }).toList();
     }
 
     //IndexInformationService를 참고하여 OpenApi 메서드 제작
@@ -335,7 +361,63 @@ public class IndexDataServiceImplement implements IndexDataService {
     }
 
     @Override
+    public CursorPageResult<IndexData> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    ) {
+        List<IndexData> entities = indexDataRepository.searchIndexDatas(indexDataFilterCondition,
+                cursorPaginationCondition);
+        Long totalElements = indexDataRepository.count(indexDataFilterCondition);
+
+        Long nextIdAfter = null;
+        String nextCursor = null;
+        Boolean hashNext = entities.size() > cursorPaginationCondition.size();
+
+        List<IndexData> content = entities.subList(0,
+                Math.min(entities.size(), cursorPaginationCondition.size()));
+
+        if (!entities.isEmpty()) {
+            IndexData lastEntity = content.get(content.size() - 1);
+            nextIdAfter = lastEntity.getId();
+            nextCursor = this.getLastSortValue(cursorPaginationCondition.sortField(), lastEntity);
+        }
+
+        PageMeta pageMeta = PageMeta.builder()
+                .nextCursor(nextCursor)
+                .nextIdAfter(nextIdAfter)
+                .size(cursorPaginationCondition.size())
+                .totalElements(totalElements)
+                .hasNext(hashNext)
+                .build();
+
+        return CursorPageResult.of(content, pageMeta);
+    }
+
+    private String getLastSortValue(
+            String sortField,
+            IndexData indexData
+    ) {
+        return switch (sortField) {
+            case "baseDate" -> indexData.getBaseDate().toString();
+            case "marketPrice" -> indexData.getMarketPrice().toString();
+            case "closingPrice" -> indexData.getClosingPrice().toString();
+            case "highPrice" -> indexData.getHighPrice().toString();
+            case "lowPrice" -> indexData.getLowPrice().toString();
+            case "versus" -> indexData.getVersus().toString();
+            case "fluctuation" -> indexData.getFluctuationRate().toString();
+            case "tradingQuantity" -> indexData.getTradingQuantity().toString();
+            case "tradingPrice" -> indexData.getTradingPrice().toString();
+            case "marketTotalAmount" -> indexData.getMarketTotalAmount().toString();
+            default -> null;
+        };
+    }
+
+    @Override
     public Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation) {
         return indexDataRepository.findLatestBaseDate(indexInformation);
     }
 }
+
+
+
+

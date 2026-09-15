@@ -37,10 +37,10 @@ public record Performance(
                 indexInfoId,
                 indexClassification,
                 indexName,
-                null,
-                null,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
                 currentPrice,
-                null
+                BigDecimal.ZERO
         );
     }
 }

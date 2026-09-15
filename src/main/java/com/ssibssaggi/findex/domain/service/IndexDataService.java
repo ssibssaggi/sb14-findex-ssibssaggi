@@ -9,16 +9,20 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 public interface IndexDataService {
-
-    List<IndexDataExportResponse> findAllForExport(
+    List<IndexData> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            String sortField,
+            String sortDirection
     );
 
     List<IndexData> upsertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands);
@@ -35,22 +39,26 @@ public interface IndexDataService {
     List<IndexData> upsertDataByIndexInformationAndBaseDate(
             List<IndexDataFetchResult> commands);
 
-    IndexData createData(IndexDataCreateCommand createCommand,
-            IndexInformation indexInformation);
+    IndexData createData(IndexDataCreateCommand createCommand, IndexInformation indexInformation);
 
     IndexData findById(Long id);
 
-    IndexData update(
-            Long id, IndexDataUpdateCommand updateCommand
-    );
+    IndexData update(Long id, IndexDataUpdateCommand updateCommand);
 
     void delete(Long id);
-
-    void deleteByIndexInfoId(Long indexInfoId);
 
     List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType);
 
     List<DataPoints> calculateMovingAverage(List<IndexData> sorted, Integer windowSize);
+
+    CursorPageResult<IndexData> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    );
+
+    void deleteByIndexInfoId(Long indexInfoId);
+
+    List<IndexDataPair> findFavoritePerformance(List<Long> informationIds, String periodType);
 
     Optional<LocalDate> findLatestBaseDate(IndexInformation indexInformation);
 }

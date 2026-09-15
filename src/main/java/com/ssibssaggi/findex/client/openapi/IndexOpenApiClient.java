@@ -38,7 +38,7 @@ public class IndexOpenApiClient {
                                 // API 서버가 영업일 하루 뒤 오후 1시에 업데이트 되므로, 일단 임시 방편으로 3을 빼놓음
                                 // 주말, 공휴일 등 고려해서 가능한 가장 최신으로 업데이트하는 로직 필요할 듯
                                 .queryParam("likeBasDt", localDateToYyyyMmDd(
-                                        LocalDate.now(ZoneId.systemDefault()).minusDays(1)))
+                                        LocalDate.now(ZoneId.systemDefault()).minusDays(4)))
                                 .build(serviceKey)
                         )
                         .accept(MediaType.APPLICATION_JSON)

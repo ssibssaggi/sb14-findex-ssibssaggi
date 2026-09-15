@@ -200,4 +200,8 @@ public class IndexInformationService {
     public List<IndexInformation> findAllByAutoSyncEnabledIsTrue() {
         return indexInformationRepository.findAllByAutoSyncConfig_EnabledTrue();
     }
+
+    public List<Long> findFavoriteIndexInfoIds() {
+        return indexInformationRepository.findIdsByFavoriteTrue();
+    }
 }

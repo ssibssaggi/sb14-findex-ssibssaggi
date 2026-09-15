@@ -1,5 +1,6 @@
 package com.ssibssaggi.findex.application.index;
 
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,13 +12,19 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.application.index.support.PerformanceAssembler;
+import com.ssibssaggi.findex.common.CsvExporter;
+import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
+import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.service.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
+import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +34,7 @@ public class IndexDataApplication {
 
     private final IndexDataService indexDataService;
     private final IndexInformationService indexInformationService;
+    private final CsvExporter exporter;
 
     @Transactional
     public IndexDataResponse saveData(IndexDataCreateCommand createCommand) {
@@ -54,11 +62,17 @@ public class IndexDataApplication {
         indexDataService.delete(id);
     }
 
-    /*
     @Transactional
-    public void deletedByInfoId(Long indexInfoId) {
-
-    }*/
+    public CursorPageResult<IndexDataResponse> searchDataInfos(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    ) {
+        CursorPageResult<IndexData> pageEntities = indexDataService.searchDataInfos(
+                indexDataFilterCondition,
+                cursorPaginationCondition
+        );
+        return pageEntities.map(IndexDataResponse::toDto);
+    }
 
     @Transactional
     public List<IndexPerformanceRankResponse> getPerformanceRanking(
@@ -82,7 +96,7 @@ public class IndexDataApplication {
         List<Performance> performances = PerformanceAssembler.assemble(baseDateData, periodData);
 
         return performances.stream().map(performance -> {
-            int rank = performances.indexOf(performance);
+            int rank = performances.indexOf(performance) + 1;
             return IndexPerformanceRankResponse.of(performance, rank);
         }).toList();
     }
@@ -109,5 +123,39 @@ public class IndexDataApplication {
                 ma20
 
         );
+    }
+
+    @Transactional
+    public List<Performance> getFavoritePerformance(String periodType) {
+
+        List<Long> favoriteIndexInfoIds = indexInformationService.findFavoriteIndexInfoIds();
+
+        List<IndexDataPair> pairs = indexDataService.findFavoritePerformance(favoriteIndexInfoIds, periodType);
+
+        return pairs.stream()
+                .map(pair -> PerformanceAssembler.assemble(pair.baseDateData(), pair.beforeDatas()))
+                .flatMap(List::stream)
+                .toList();
+    }
+
+    @Transactional
+    public void findAllForExport(
+            Long indexInformationId,
+            LocalDate startDate,
+            LocalDate endDate,
+            String sortField,
+            String sortDirection,
+            OutputStream out
+    ) {
+        List<IndexData> entities = indexDataService.findAllForExport(
+                indexInformationId,
+                startDate,
+                endDate,
+                sortField,
+                sortDirection);
+        List<IndexDataExportDto> exportData = entities.stream()
+                .map(IndexDataExportDto::from)
+                .toList();
+        exporter.writeCsv(out, exportData);
     }
 }
