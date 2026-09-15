@@ -14,14 +14,16 @@ import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.AutoSyncConfigDto;
 import com.ssibssaggi.findex.controller.dto.AutoSyncConfigUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.swagger.AutoSyncControllerSwagger;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class AutoSyncController {
+public class AutoSyncController implements AutoSyncControllerSwagger {
     private final IndexInformationApplication indexInformationApplication;
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/api/auto-sync-configs/{id}")
     public AutoSyncConfigDto updateAutoSyncConfig(
@@ -31,6 +33,7 @@ public class AutoSyncController {
         return indexInformationApplication.updateAutoSyncConfig(id, request.enabled());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/auto-sync-configs")
     public CursorPageResult<AutoSyncConfigDto> searchAutoSyncConfigs(

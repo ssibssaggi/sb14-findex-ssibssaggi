@@ -17,6 +17,7 @@ public class IndexDataSyncService {
     private final IndexDataService indexDataService;
     private final IntegrationHistoryService integrationHistoryService;
 
+    // Application Layer에 트랜잭션이 적용되지 않으므로, Service layer에서 연동 성공한 indexDate의 저장, 연동 기록 적재 원자성을 보장
     @Transactional
     public List<IntegrationHistory> saveIndexDataWithHistory(String worker, List<UpsertIndexDataCommand> commands) {
         List<InsertIntegrationHistoryCommand> historyCommands = indexDataService.upsertIndexData(commands)
