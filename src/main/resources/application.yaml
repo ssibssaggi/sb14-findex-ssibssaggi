@@ -1,20 +1,30 @@
 spring:
-  application:
-    name: findex
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  config:
-    import: "optional:.env"
+    application:
+      name: findex
 
+    datasource:
+      driver-class-name: org.postgresql.Driver
+      url: ${DB_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+    config:
+      import: "optional:.env"
 
-  jpa:
-    hibernate:
-      ddl-auto: create
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: update # create -> update로 변경 상태
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+      properties:
+        hibernate:
+          format_sql: true          # SQL 줄바꿈 포맷팅
+          highlight_sql: true       # SQL 색깔 강조
+          use_sql_comments: true    # 주석 표시
+logging:
+  level:
+    org.hibernate.SQL: DEBUG              # 실행되는 SQL 쿼리 로그
+    org.hibernate.orm.jdbc.bind: TRACE    # 바인딩 파라미터 값 로그 (Hibernate 6+)
 
 index-api:
   service-key: ${API_KEY}
@@ -22,3 +32,5 @@ index-api:
 app:
   schedule:
     auto-sync-cron: ${AUTO_SYNC_CRON}
+
+

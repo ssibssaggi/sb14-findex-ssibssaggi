@@ -52,4 +52,8 @@ public class IntegrationHistoryService {
     public Long countIntegrationHistories(IntegrationHistoryFilterCondition queryFilterCondition) {
         return integrationHistoryRepository.countIntegrationHistories(queryFilterCondition);
     }
+
+    public void deleteByIndexInfoId(Long indexInfoId) {
+        integrationHistoryRepository.deleteByIndexInformationId(indexInfoId);
+    }
 }

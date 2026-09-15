@@ -92,10 +92,12 @@ public class IndexInformation {
             Float baseIndex,
             Boolean favorite
     ) {
+
         this.employedItemsCount = employedItemsCount;
         this.basePointInTime = LocalDate.parse(basePointInTime);
         this.baseIndex = baseIndex;
         this.favorite = favorite;
+        this.sourceType = SourceType.USER;
     }
 
     public void updateWithOpenApi(
@@ -106,6 +108,7 @@ public class IndexInformation {
         this.employedItemsCount = employedItemsCount;
         this.basePointInTime = basePointInTime;
         this.baseIndex = baseIndex;
+        this.sourceType = SourceType.OPEN_API;
     }
 
     public IndexInformation updateEnabled(boolean enabled) {
