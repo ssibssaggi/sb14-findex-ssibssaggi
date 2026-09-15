@@ -1,11 +1,6 @@
 package com.ssibssaggi.findex.controller;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,30 +16,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.ssibssaggi.findex.application.index.IndexDataApplication;
 import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataCreateRequest;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
-import com.ssibssaggi.findex.domain.service.IndexDataService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class IndexDataController {
-
-    private final IndexDataService indexDataService;
     private final IndexDataApplication indexDataApplication;
 
     @GetMapping("/api/index-data/export/csv")
@@ -60,29 +48,9 @@ public class IndexDataController {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Content-Disposition", "attachment; filename=index_data.csv");
 
-        List<IndexDataExportDto> exportData =
-                indexDataService.findAllForExport(indexInformationId, startDate, endDate, sortField, sortDirection);
-
-        try (
-                OutputStream out = response.getOutputStream();
-                Writer writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8)) {
-            out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
-
-            HeaderColumnNameMappingStrategy<IndexDataExportDto> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setType(IndexDataExportDto.class);
-            List<String> headerOrder = List.of(
-                    "기준일자", "시가", "종가", "고가", "저가", "전일대비등락", "등락률", "거래량", "거래대금", "시가총액"
-            );
-            strategy.setColumnOrderOnWrite(Comparator.comparing(headerOrder::indexOf));
-
-            StatefulBeanToCsv<IndexDataExportDto> beanToCsv =
-                    new StatefulBeanToCsvBuilder<IndexDataExportDto>(writer)
-                            .withApplyQuotesToAll(false)
-                            .withMappingStrategy(strategy)
-                            .build();
-            beanToCsv.write(exportData);
-            writer.flush();
-        }
+        indexDataApplication.findAllForExport(
+                indexInformationId, startDate, endDate, sortField, sortDirection, response.getOutputStream()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)

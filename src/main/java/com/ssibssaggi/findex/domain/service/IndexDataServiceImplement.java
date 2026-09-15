@@ -19,7 +19,6 @@ import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -39,21 +38,19 @@ public class IndexDataServiceImplement implements IndexDataService {
     private final IndexDataRepository indexDataRepository;
 
     @Override
-    public List<IndexDataExportDto> findAllForExport(
+    public List<IndexData> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate,
             String sortField,
             String sortDirection) {
         return indexDataRepository
-                .findByIndexInformationIdAndBaseDateBetween(indexInformationId,
+                .findByIndexInformationIdAndBaseDateBetween(
+                        indexInformationId,
                         startDate,
                         endDate,
                         sortField,
-                        sortDirection)
-                .stream()
-                .map(IndexDataExportDto::from)
-                .toList();
+                        sortDirection);
     }
 
     // 정의되어있는 repository 이름이 이상한듯?

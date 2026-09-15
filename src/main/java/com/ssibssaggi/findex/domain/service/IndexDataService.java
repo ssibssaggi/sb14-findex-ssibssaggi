@@ -10,14 +10,13 @@ import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.support.IndexDataPair;
 
 public interface IndexDataService {
-    List<IndexDataExportDto> findAllForExport(
+    List<IndexData> findAllForExport(
             Long indexInformationId,
             LocalDate startDate,
             LocalDate endDate,
