@@ -50,7 +50,7 @@ public class IndexIntegrationApplication {
         return SyncJobDto.from(integrationHistories);
     }
 
-    @Transactional
+    // syncIndexData()의 각 Service마다 트랜잭션 적용
     public List<SyncJobDto> syncIndexDataWithOpenApi(String worker, SyncIndexDataCommand command) {
         List<IndexInformation> indexInformations = indexInformationService.findAllByIds(command.indexInfosIds());
         List<IndexDataFetchQuery> indexDataFetchQueries = indexInformations.stream()
@@ -61,27 +61,10 @@ public class IndexIntegrationApplication {
                 ))
                 .toList();
 
-        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
-                .stream()
-                .map(UpsertIndexDataCommand::from)
-                .toList();
-
-        List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .upsertIndexData(upsertIndexDataCommands)
-                .stream()
-                .map(indexData -> InsertIntegrationHistoryCommand.of(
-                        worker,
-                        indexData.getBaseDate(),
-                        indexData.getIndexInformation()
-                ))
-                .toList();
-
-        List<IntegrationHistory> integrationHistories = integrationHistoryService.insertIndexDataHistory(
-                insertIntegrationHistoryCommands);
-        return SyncJobDto.from(integrationHistories);
+        return SyncJobDto.from(this.syncIndexData(worker, indexDataFetchQueries));
     }
 
-    // 스케줄러에서 트랜잭션 없이 호출하고, 각 서비스에서 따로 커밋한다.
+    // syncIndexData()의 각 Service마다 트랜잭션 적용
     public List<IntegrationHistory> syncAutoSyncEnabledIndexDataWithOpenApi() {
         List<IndexInformation> autoSyncEnabledIndexInfos = indexInformationService.findAllByAutoSyncEnabledIsTrue();
 
@@ -94,8 +77,11 @@ public class IndexIntegrationApplication {
                 })
                 .toList();
 
-        // 성공한 IndexDataFetchResult, 실패한 IndexDataFetchQuery 다 가지고 있음.
-        IndexDataFetchBatchResult fetchResult = fetchIndexData(indexDataFetchQueries);
+        return this.syncIndexData("System", indexDataFetchQueries);
+    }
+
+    private List<IntegrationHistory> syncIndexData(String worker, List<IndexDataFetchQuery> queries) {
+        IndexDataFetchBatchResult fetchResult = fetchIndexData(queries);
         List<IntegrationHistory> histories = new ArrayList<>();
 
         // @Transactional
@@ -103,7 +89,9 @@ public class IndexIntegrationApplication {
                 // 응답 데이터의 있던 없던 기간 사이의 각 날짜에 호출 실패를 기록
                 .flatMap(query -> query.baseDateFrom().datesUntil(query.baseDateTo().plusDays(1))
                         .map(targetDate -> InsertIntegrationHistoryCommand.of(
-                                "System", targetDate, query.indexInformation())
+                                worker,
+                                targetDate,
+                                query.indexInformation())
                         )
                 )
                 .toList();
@@ -114,7 +102,7 @@ public class IndexIntegrationApplication {
                 .stream()
                 .map(UpsertIndexDataCommand::from)
                 .toList();
-        histories.addAll(indexDataSyncService.saveIndexDataWithHistory("System", upsertIndexDataCommands));
+        histories.addAll(indexDataSyncService.saveIndexDataWithHistory(worker, upsertIndexDataCommands));
         return histories;
     }
 
@@ -127,7 +115,7 @@ public class IndexIntegrationApplication {
                 results.addAll(indexOpenApiClient.syncIndexData(query));
             } catch (CustomException e) {
                 failedQueries.add(query);
-                log.warn("[지수 데이터 자동 연동 실패] indexInfoId={}, baseDateFrom={}, baseDateTo={}",
+                log.warn("[지수 데이터 연동 실패] indexInfoId={}, baseDateFrom={}, baseDateTo={}",
                         query.indexInformation().getId(), query.baseDateFrom(), query.baseDateTo());
             }
         }
