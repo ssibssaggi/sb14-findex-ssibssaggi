@@ -123,8 +123,4 @@ public class IndexInformation {
     public Long getAutoSyncId() {
         return autoSyncConfig.getId();
     }
-
-    public boolean isDeletable() {
-        return this.sourceType != SourceType.OPEN_API;
-    }
 }
