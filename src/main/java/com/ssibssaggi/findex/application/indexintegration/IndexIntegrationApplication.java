@@ -50,7 +50,7 @@ public class IndexIntegrationApplication {
         return SyncJobDto.from(integrationHistories);
     }
 
-    // syncIndexData()의 각 Service마다 트랜잭션 적용
+    @Transactional
     public List<SyncJobDto> syncIndexDataWithOpenApi(String worker, SyncIndexDataCommand command) {
         List<IndexInformation> indexInformations = indexInformationService.findAllByIds(command.indexInfosIds());
         List<IndexDataFetchQuery> indexDataFetchQueries = indexInformations.stream()
@@ -64,7 +64,7 @@ public class IndexIntegrationApplication {
         return SyncJobDto.from(this.syncIndexData(worker, indexDataFetchQueries));
     }
 
-    // syncIndexData()의 각 Service마다 트랜잭션 적용
+    @Transactional
     public List<IntegrationHistory> syncAutoSyncEnabledIndexDataWithOpenApi() {
         List<IndexInformation> autoSyncEnabledIndexInfos = indexInformationService.findAllByAutoSyncEnabledIsTrue();
 

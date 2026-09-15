@@ -3,6 +3,7 @@ package com.ssibssaggi.findex.domain.service.integrationhistory;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssibssaggi.findex.application.indexintegration.InsertIntegrationHistoryCommand;
@@ -40,7 +41,7 @@ public class IntegrationHistoryService {
         return integrationHistoryRepository.saveAll(creating);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<IntegrationHistory> insertFailedIndexDataHistory(List<InsertIntegrationHistoryCommand> commands) {
         List<IntegrationHistory> creating = commands.stream()
                 .map(command -> IntegrationHistory.createFailedIndexDataHistory(
