@@ -7,7 +7,7 @@ import java.util.Optional;
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
-import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
+import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
@@ -21,7 +21,7 @@ public interface IndexDataService {
             LocalDate endDate
     );
 
-    List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands);
+    List<IndexData> upsertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands);
 
     List<IndexData> findPeriodDataByBaseDate(
             LocalDate baseDate,

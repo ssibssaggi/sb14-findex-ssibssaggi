@@ -55,13 +55,13 @@ public class IndexIntegrationApplication {
                 ))
                 .toList();
 
-        List<InsertIndexDataCommand> insertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
+        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
                 .stream()
-                .map(InsertIndexDataCommand::from)
+                .map(UpsertIndexDataCommand::from)
                 .toList();
 
         List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .insertIndexData(insertIndexDataCommands)
+                .upsertIndexData(upsertIndexDataCommands)
                 .stream()
                 .map(indexData -> InsertIntegrationHistoryCommand.of(
                         worker,
@@ -87,12 +87,12 @@ public class IndexIntegrationApplication {
                     return IndexDataFetchQuery.fromLastFetchedDate(indexInformation, lastFetchedDate);
                 })
                 .toList();
-        List<InsertIndexDataCommand> insertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
+        List<UpsertIndexDataCommand> upsertIndexDataCommands = indexOpenApiClient.syncIndexData(indexDataFetchQueries)
                 .stream()
-                .map(InsertIndexDataCommand::from)
+                .map(UpsertIndexDataCommand::from)
                 .toList();
         List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .insertIndexData(insertIndexDataCommands)
+                .upsertIndexData(upsertIndexDataCommands)
                 .stream()
                 .map(indexData -> InsertIntegrationHistoryCommand.of(
                         "System",
