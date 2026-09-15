@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.common;
+package com.ssibssaggi.findex.common.utils;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -8,32 +8,33 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.ssibssaggi.findex.common.exception.CustomException;
-import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
 
-@Component
 public class CsvExporter {
-    public void writeCsv(OutputStream out, List<IndexDataExportDto> exportData) {
+    public static <T> void writeCsv(
+            OutputStream out,
+            List<T> exportData,
+            List<String> headerOrder,
+            Class<T> type
+
+    ) {
         try (Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
             out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
 
-            HeaderColumnNameMappingStrategy<IndexDataExportDto> strategy = new HeaderColumnNameMappingStrategy<>();
-            strategy.setType(IndexDataExportDto.class);
-            List<String> headerOrder = List.of(
-                    "기준일자", "시가", "종가", "고가", "저가", "전일대비등락", "등락률", "거래량", "거래대금", "시가총액"
-            );
+            HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();
+            strategy.setType(type);
             strategy.setColumnOrderOnWrite(Comparator.comparing(headerOrder::indexOf));
 
-            StatefulBeanToCsv<IndexDataExportDto> beanToCsv =
-                    new StatefulBeanToCsvBuilder<IndexDataExportDto>(writer)
+            StatefulBeanToCsv<T> beanToCsv =
+                    new StatefulBeanToCsvBuilder<T>(writer)
                             .withApplyQuotesToAll(false)
                             .withMappingStrategy(strategy)
                             .build();
+
             beanToCsv.write(exportData);
             writer.flush();
         } catch (Exception e) {

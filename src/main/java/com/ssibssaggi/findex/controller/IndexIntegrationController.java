@@ -21,6 +21,7 @@ import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataSyncRequest;
 import com.ssibssaggi.findex.controller.dto.SyncJobDto;
+import com.ssibssaggi.findex.controller.swagger.IndexIntegrationControllerSwagger;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationResult;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.JobType;
 
@@ -28,15 +29,17 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class IndexIntegrationController {
+public class IndexIntegrationController implements IndexIntegrationControllerSwagger {
     private final IndexIntegrationApplication indexIntegrationApplication;
 
+    @Override
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/api/sync-jobs/index-infos")
     public List<SyncJobDto> syncIndexInfo(HttpServletRequest request) {
         return indexIntegrationApplication.syncIndexInfoWithOpenApi(request.getRemoteAddr());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/api/sync-jobs/index-data")
     public List<SyncJobDto> syncIndexData(
@@ -47,6 +50,7 @@ public class IndexIntegrationController {
         return indexIntegrationApplication.syncIndexDataWithOpenApi(request.getRemoteAddr(), command);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/api/sync-jobs")
     public CursorPageResult<SyncJobDto> searchSyncJobs(

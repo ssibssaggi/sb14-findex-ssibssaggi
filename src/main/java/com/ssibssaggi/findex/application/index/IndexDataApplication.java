@@ -12,8 +12,8 @@ import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
 import com.ssibssaggi.findex.application.index.dto.Performance;
 import com.ssibssaggi.findex.application.index.support.PerformanceAssembler;
-import com.ssibssaggi.findex.common.CsvExporter;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.common.utils.CsvExporter;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexChartResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportDto;
@@ -34,7 +34,6 @@ public class IndexDataApplication {
 
     private final IndexDataService indexDataService;
     private final IndexInformationService indexInformationService;
-    private final CsvExporter exporter;
 
     @Transactional
     public IndexDataResponse saveData(IndexDataCreateCommand createCommand) {
@@ -156,6 +155,11 @@ public class IndexDataApplication {
         List<IndexDataExportDto> exportData = entities.stream()
                 .map(IndexDataExportDto::from)
                 .toList();
-        exporter.writeCsv(out, exportData);
+
+        List<String> headerOrder = List.of(
+                "기준일자", "시가", "종가", "고가", "저가", "전일대비등락", "등락률", "거래량", "거래대금", "시가총액"
+        );
+
+        CsvExporter.writeCsv(out, exportData, headerOrder, IndexDataExportDto.class);
     }
 }
