@@ -7,7 +7,7 @@ import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
-public record InsertIndexDataCommand(
+public record UpsertIndexDataCommand(
         IndexInformation indexInformation,
         LocalDate baseDate,
         BigDecimal marketPrice,
@@ -20,8 +20,8 @@ public record InsertIndexDataCommand(
         Long tradingPrice,
         Long marketTotalAmount
 ) {
-    public static InsertIndexDataCommand from(IndexDataFetchResult fetchResult) {
-        return new InsertIndexDataCommand(
+    public static UpsertIndexDataCommand from(IndexDataFetchResult fetchResult) {
+        return new UpsertIndexDataCommand(
                 fetchResult.indexInformation(),
                 fetchResult.baseDate(),
                 fetchResult.marketPrice(),

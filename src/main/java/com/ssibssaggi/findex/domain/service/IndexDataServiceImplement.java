@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
-import com.ssibssaggi.findex.application.indexintegration.InsertIndexDataCommand;
+import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.IndexDataExportResponse;
@@ -58,9 +58,9 @@ public class IndexDataServiceImplement implements IndexDataService {
 
     // 정의되어있는 repository 이름이 이상한듯?
     @Override
-    public List<IndexData> insertIndexData(List<InsertIndexDataCommand> insertIndexDataCommands) {
+    public List<IndexData> insertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands) {
         List<IndexData> indexData = insertIndexDataCommands.stream()
-                .map(InsertIndexDataCommand::toIndexData)
+                .map(UpsertIndexDataCommand::toIndexData)
                 .toList();
         return indexDataRepository.saveAll(indexData);
     }
