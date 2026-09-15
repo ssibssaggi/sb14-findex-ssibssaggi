@@ -2,6 +2,7 @@ package com.ssibssaggi.findex.application.index;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +10,7 @@ import com.ssibssaggi.findex.application.index.dto.IndexInfoCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoUpdateCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
+import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.AutoSyncConfigDto;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
@@ -41,8 +43,12 @@ public class IndexInformationApplication {
 
     @Transactional
     public void deleteById(Long id) {
-
         IndexInformation information = indexInformationService.findById(id);
+
+        if (!information.isDeletable()) {
+            throw new CustomException("잘못된 요청입니다.", HttpStatus.BAD_REQUEST, "OPEN_API 지수정보는 삭제가 불가능합니다.");
+        }
+
         Long infoId = information.getId();
         indexDataService.deleteByIndexInfoId(infoId);
         indexInformationService.delete(information);
