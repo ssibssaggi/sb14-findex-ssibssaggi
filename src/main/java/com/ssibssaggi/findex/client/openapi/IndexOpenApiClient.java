@@ -63,7 +63,7 @@ public class IndexOpenApiClient {
                 .toList();
     }
 
-    private List<IndexDataFetchResult> syncIndexData(IndexDataFetchQuery query) {
+    public List<IndexDataFetchResult> syncIndexData(IndexDataFetchQuery query) {
         IndexDataOpenApiResponse response = Optional.ofNullable(indexRestClient.get()
                         .uri(uriBuilder -> uriBuilder
                                 .queryParam("serviceKey", "{serviceKey}")
