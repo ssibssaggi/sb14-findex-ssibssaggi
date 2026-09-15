@@ -57,12 +57,6 @@ public class IndexOpenApiClient {
         return date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    public List<IndexDataFetchResult> syncIndexData(List<IndexDataFetchQuery> queries) {
-        return queries.stream()
-                .flatMap(query -> syncIndexData(query).stream())
-                .toList();
-    }
-
     public List<IndexDataFetchResult> syncIndexData(IndexDataFetchQuery query) {
         IndexDataOpenApiResponse response = Optional.ofNullable(indexRestClient.get()
                         .uri(uriBuilder -> uriBuilder
