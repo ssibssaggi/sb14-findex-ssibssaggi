@@ -21,14 +21,16 @@ import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexInformationResponse;
 import com.ssibssaggi.findex.controller.dto.IndexInformationSummaryResponse;
+import com.ssibssaggi.findex.controller.swagger.IndexInformationControllerSwagger;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class IndexInformationController {
+public class IndexInformationController implements IndexInformationControllerSwagger {
     private final IndexInformationApplication indexInformationApplication;
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-infos")
     public CursorPageResult<IndexInformationResponse> getInfos(
@@ -56,6 +58,7 @@ public class IndexInformationController {
         return indexInformationApplication.searchIndexInfos(indexInfoFilterCondition, cursorPaginationCondition);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/api/index-infos")
     public IndexInformationResponse createIndexInfo(
@@ -64,6 +67,7 @@ public class IndexInformationController {
         return indexInformationApplication.saveInformation(indexInfoCreateRequest.toCommand());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-infos/{id}")
     public IndexInformationResponse getIndexInfoById(
@@ -72,6 +76,7 @@ public class IndexInformationController {
         return indexInformationApplication.findById(id);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/api/index-infos/{id}")
     public void deleteIndexInfoById(
@@ -80,6 +85,7 @@ public class IndexInformationController {
         indexInformationApplication.deleteById(id);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/api/index-infos/{id}")
     public IndexInformationResponse updateIndexInfoById(
@@ -89,6 +95,7 @@ public class IndexInformationController {
         return indexInformationApplication.update(id, indexInfoUpdateRequest.toCommand());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-infos/summaries")
     public List<IndexInformationSummaryResponse> getIndexInfoSummaries() {

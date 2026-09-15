@@ -27,14 +27,16 @@ import com.ssibssaggi.findex.controller.dto.IndexDataResponse;
 import com.ssibssaggi.findex.controller.dto.IndexDataUpdateRequest;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceFavoriteResponse;
 import com.ssibssaggi.findex.controller.dto.IndexPerformanceRankResponse;
+import com.ssibssaggi.findex.controller.swagger.IndexDataControllerSwagger;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class IndexDataController {
+public class IndexDataController implements IndexDataControllerSwagger {
     private final IndexDataApplication indexDataApplication;
 
+    @Override
     @GetMapping("/api/index-data/export/csv")
     public void export(
             @RequestParam(required = false) Long indexInformationId,
@@ -53,6 +55,7 @@ public class IndexDataController {
         );
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-data")
     public CursorPageResult<IndexDataResponse> getInfos(
@@ -82,6 +85,7 @@ public class IndexDataController {
                 cursorPaginationCondition);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/api/index-data")
     public IndexDataResponse createIndexData(
@@ -89,6 +93,7 @@ public class IndexDataController {
         return indexDataApplication.saveData(createRequest.toCommand());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping(value = "/api/index-data/{id}")
     public IndexDataResponse updateIndexData(
@@ -96,12 +101,14 @@ public class IndexDataController {
         return indexDataApplication.update(id, request.toCommand());
     }
 
+    @Override
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/api/index-data/{id}")
     public void deleteIndexData(@PathVariable Long id) {
         indexDataApplication.delete(id);
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-data/performance/rank")
     public List<IndexPerformanceRankResponse> getPerformanceRanking(
@@ -116,6 +123,7 @@ public class IndexDataController {
         );
     }
 
+    @Override
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/api/index-data/{id}/chart")
     public IndexChartResponse getIndexChartData(
@@ -125,8 +133,9 @@ public class IndexDataController {
         return indexDataApplication.getIndexChartData(id, periodType);
     }
 
-    @ResponseStatus(HttpStatus.OK) // 스웨거를 보면 상태코드가 200이므로 HttpStatus.OK
-    @GetMapping("/api/index-data/performance/favorite") //스웨거를 보면 Get으로 받아온다
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/api/index-data/performance/favorite")
     public List<IndexPerformanceFavoriteResponse> getFavoritePerformance(
             @RequestParam(defaultValue = "DAILY")
             String periodType
