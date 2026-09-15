@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -25,7 +26,7 @@ public interface IndexDataRepository extends JpaRepository<IndexData, Long>,
     //IndexInformation의 id가 일치하는 데이터 DELETE
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from IndexData i where i.indexInformation.id = :indexInfoId")
-    void deleteByIndexInformationId(Long indexInfoId);
+    void deleteByIndexInformationId(@Param("indexInfoId") Long indexInfoId);
 
     List<IndexData> findByIndexInformation_FavoriteTrueOrderByIndexInformation_IdAscBaseDateDesc();
 
