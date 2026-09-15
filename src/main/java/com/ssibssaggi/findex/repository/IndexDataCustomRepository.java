@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
+import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
@@ -58,4 +60,15 @@ public interface IndexDataCustomRepository {
             LocalDate baseDate,
             Long indexInfoId
     );
+
+    List<IndexData> searchIndexDatas(
+            IndexDataFilterCondition indexDataFilterCondition,
+            CursorPaginationCondition cursorPaginationCondition
+    );
+
+    List<IndexData> findByIndexInformationIdAndBaseDateBetween(
+            Long indexInformationId, LocalDate startDate, LocalDate endDate, String sortField, String sortDirection
+    );
+
+    Long count(IndexDataFilterCondition searchCondition);
 }
