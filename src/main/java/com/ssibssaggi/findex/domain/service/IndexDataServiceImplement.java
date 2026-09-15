@@ -41,6 +41,67 @@ public class IndexDataServiceImplement implements IndexDataService {
                 .toList();
     }
 
+    @Override
+    public List<IndexData> upsertIndexData(List<UpsertIndexDataCommand> upsertIndexDataCommands) {
+        List<IndexData> indexData = upsertIndexDataCommands.stream()
+                .map(command -> upsertIndexData(
+                        command.indexInformation(),
+                        command.baseDate(),
+                        command.marketPrice(),
+                        command.closingPrice(),
+                        command.highPrice(),
+                        command.lowPrice(),
+                        command.versus(),
+                        command.fluctuationRate(),
+                        command.tradingQuantity(),
+                        command.tradingPrice(),
+                        command.marketTotalAmount()
+                ))
+                .toList();
+        return indexDataRepository.saveAll(indexData);
+    }
+
+    private IndexData upsertIndexData(
+            IndexInformation indexInformation,
+            LocalDate baseDate,
+            BigDecimal marketPrice,
+            BigDecimal closingPrice,
+            BigDecimal highPrice,
+            BigDecimal lowPrice,
+            BigDecimal versus,
+            BigDecimal fluctuationRate,
+            Long tradingQuantity,
+            Long tradingPrice,
+            Long marketTotalAmount
+    ) {
+        return indexDataRepository.findByIndexInformationAndBaseDate(indexInformation, baseDate)
+                .map(indexData -> updateIndexData(
+                        indexData,
+                        marketPrice,
+                        closingPrice,
+                        highPrice,
+                        lowPrice,
+                        versus,
+                        fluctuationRate,
+                        tradingQuantity,
+                        tradingPrice,
+                        marketTotalAmount
+                ))
+                .orElseGet(() -> createIndexData(
+                        indexInformation,
+                        baseDate,
+                        marketPrice,
+                        closingPrice,
+                        highPrice,
+                        lowPrice,
+                        versus,
+                        fluctuationRate,
+                        tradingQuantity,
+                        tradingPrice,
+                        marketTotalAmount
+                ));
+    }
+
     private IndexDataExportResponse toResponse(IndexData data) {
         return new IndexDataExportResponse(
                 data.getBaseDate(),
@@ -56,13 +117,57 @@ public class IndexDataServiceImplement implements IndexDataService {
         );
     }
 
-    // 정의되어있는 repository 이름이 이상한듯?
-    @Override
-    public List<IndexData> insertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands) {
-        List<IndexData> indexData = insertIndexDataCommands.stream()
-                .map(UpsertIndexDataCommand::toIndexData)
-                .toList();
-        return indexDataRepository.saveAll(indexData);
+    private IndexData updateIndexData(
+            IndexData indexData,
+            BigDecimal marketPrice,
+            BigDecimal closingPrice,
+            BigDecimal highPrice,
+            BigDecimal lowPrice,
+            BigDecimal versus,
+            BigDecimal fluctuationRate,
+            Long tradingQuantity,
+            Long tradingPrice,
+            Long marketTotalAmount) {
+        indexData.updateWithOpenApi(
+                marketPrice,
+                closingPrice,
+                highPrice,
+                lowPrice,
+                versus,
+                fluctuationRate,
+                tradingQuantity,
+                tradingPrice,
+                marketTotalAmount
+        );
+        return indexData;
+    }
+
+    private IndexData createIndexData(
+            IndexInformation indexInformation,
+            LocalDate baseDate,
+            BigDecimal marketPrice,
+            BigDecimal closingPrice,
+            BigDecimal highPrice,
+            BigDecimal lowPrice,
+            BigDecimal versus,
+            BigDecimal fluctuationRate,
+            Long tradingQuantity,
+            Long tradingPrice,
+            Long marketTotalAmount
+    ) {
+        return IndexData.createWithOpenApi(
+                indexInformation,
+                baseDate,
+                marketPrice,
+                closingPrice,
+                highPrice,
+                lowPrice,
+                versus,
+                fluctuationRate,
+                tradingQuantity,
+                tradingPrice,
+                marketTotalAmount
+        );
     }
 
     @Override
@@ -95,50 +200,22 @@ public class IndexDataServiceImplement implements IndexDataService {
     public List<IndexData> upsertDataByIndexInformationAndBaseDate(
             List<IndexDataFetchResult> commands) {
         List<IndexData> indexDatas = commands.stream()
-                .map(this::upsertData)
+                .map(command -> upsertIndexData(
+                        command.indexInformation(),
+                        command.baseDate(),
+                        command.marketPrice(),
+                        command.closingPrice(),
+                        command.highPrice(),
+                        command.lowPrice(),
+                        command.versus(),
+                        command.fluctuationRate(),
+                        command.tradingQuantity(),
+                        command.tradingPrice(),
+                        command.marketTotalAmount()
+                ))
                 .toList();
 
         return indexDataRepository.saveAll(indexDatas);
-    }
-
-    private IndexData upsertData(IndexDataFetchResult command) {
-        return indexDataRepository.findByIndexInformationAndBaseDate(
-                        command.indexInformation(),
-                        command.baseDate()
-                )
-                .map(indexData -> updateData(indexData, command))
-                .orElseGet(() -> createData(command));
-    }
-
-    private IndexData updateData(IndexData indexData, IndexDataFetchResult command) {
-        indexData.update(
-                command.marketPrice(),
-                command.closingPrice(),
-                command.highPrice(),
-                command.lowPrice(),
-                command.versus(),
-                command.fluctuationRate(),
-                command.tradingQuantity(),
-                command.tradingPrice(),
-                command.marketTotalAmount()
-        );
-        return indexData;
-    }
-
-    private IndexData createData(IndexDataFetchResult createCommand) {
-        return IndexData.createWithOpenApi(
-                createCommand.indexInformation(),
-                createCommand.baseDate(),
-                createCommand.marketPrice(),
-                createCommand.closingPrice(),
-                createCommand.highPrice(),
-                createCommand.lowPrice(),
-                createCommand.versus(),
-                createCommand.fluctuationRate(),
-                createCommand.tradingQuantity(),
-                createCommand.tradingPrice(),
-                createCommand.marketTotalAmount()
-        );
     }
 
     @Override

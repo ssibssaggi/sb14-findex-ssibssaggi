@@ -61,7 +61,7 @@ public class IndexIntegrationApplication {
                 .toList();
 
         List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .insertIndexData(upsertIndexDataCommands)
+                .upsertIndexData(upsertIndexDataCommands)
                 .stream()
                 .map(indexData -> InsertIntegrationHistoryCommand.of(
                         worker,
@@ -92,7 +92,7 @@ public class IndexIntegrationApplication {
                 .map(UpsertIndexDataCommand::from)
                 .toList();
         List<InsertIntegrationHistoryCommand> insertIntegrationHistoryCommands = indexDataService
-                .insertIndexData(upsertIndexDataCommands)
+                .upsertIndexData(upsertIndexDataCommands)
                 .stream()
                 .map(indexData -> InsertIntegrationHistoryCommand.of(
                         "System",

@@ -21,7 +21,7 @@ public interface IndexDataService {
             LocalDate endDate
     );
 
-    List<IndexData> insertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands);
+    List<IndexData> upsertIndexData(List<UpsertIndexDataCommand> insertIndexDataCommands);
 
     List<IndexData> findPeriodDataByBaseDate(
             LocalDate baseDate,
