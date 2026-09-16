@@ -15,7 +15,7 @@ import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.SyncJobDto;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
-import com.ssibssaggi.findex.domain.service.IndexDataService;
+import com.ssibssaggi.findex.domain.service.index.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
 import com.ssibssaggi.findex.domain.service.integrationhistory.IntegrationHistoryService;
 

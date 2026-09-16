@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.domain.service;
+package com.ssibssaggi.findex.domain.service.index;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

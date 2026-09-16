@@ -15,7 +15,7 @@ import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInformationResponse;
 import com.ssibssaggi.findex.controller.dto.IndexInformationSummaryResponse;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
-import com.ssibssaggi.findex.domain.service.IndexDataService;
+import com.ssibssaggi.findex.domain.service.index.IndexDataService;
 import com.ssibssaggi.findex.domain.service.index.IndexInformationService;
 import com.ssibssaggi.findex.domain.service.integrationhistory.IntegrationHistoryService;
 
