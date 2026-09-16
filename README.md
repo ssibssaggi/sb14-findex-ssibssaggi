@@ -358,7 +358,6 @@ Checkstyle은 저장소의 [google_checks.xml](config/checkstyle/google_checks.x
 
 ## 관련 문서
 
-- [프로젝트 회고록 초안](docs/retrospective.md)
 - [환경변수 예시](.env.example)
 - [애플리케이션 설정](src/main/resources/application.yaml)
 - [Swagger 명세 인터페이스](src/main/java/com/ssibssaggi/findex/controller/swagger)
