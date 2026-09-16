@@ -19,10 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "지수 데이터 관리", description = "지수 데이터(IndexData) 등록/조회/수정/삭제 및 통계 API")
+@Tag(name = "지수 데이터 관리", description = "지수 데이터 관리 API")
 public interface IndexDataControllerSwagger {
 
-    @Operation(summary = "지수 데이터 CSV 내보내기", description = "조건에 맞는 지수 데이터를 CSV 파일로 내보냅니다.")
+    @Operation(summary = "지수 데이터 CSV export", description = "지수 데이터를 CSV 파일로 export합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내보내기 성공")
     })
@@ -36,7 +36,7 @@ public interface IndexDataControllerSwagger {
             HttpServletResponse response
     ) throws Exception;
 
-    @Operation(summary = "지수 데이터 목록 조회", description = "조건에 맞는 지수 데이터를 커서 기반 페이지네이션으로 조회합니다.")
+    @Operation(summary = "지수 데이터 목록 조회", description = "지수 데이터 목록을 조회합니다. 필터링, 정렬, 커서 기반 페이지네이션을 지원합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -63,7 +63,7 @@ public interface IndexDataControllerSwagger {
             IndexDataCreateRequest createRequest
     );
 
-    @Operation(summary = "지수 데이터 수정", description = "ID로 지수 데이터를 수정합니다.")
+    @Operation(summary = "지수 데이터 수정", description = "기존 지수 데이터를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "수정 성공")
     })
@@ -74,7 +74,7 @@ public interface IndexDataControllerSwagger {
             IndexDataUpdateRequest request
     );
 
-    @Operation(summary = "지수 데이터 삭제", description = "ID로 지수 데이터를 삭제합니다.")
+    @Operation(summary = "지수 데이터 삭제", description = "지수 데이터를 삭제합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "삭제 성공")
     })
@@ -84,7 +84,7 @@ public interface IndexDataControllerSwagger {
             @Parameter(description = "지수 데이터 ID") Long id
     );
 
-    @Operation(summary = "지수 성과 랭킹 조회", description = "기간 유형별 지수 등락 성과 랭킹을 조회합니다.")
+    @Operation(summary = "지수 성과 랭킹 조회", description = "지수의 성과 분석 랭킹을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -96,7 +96,7 @@ public interface IndexDataControllerSwagger {
             @Parameter(description = "조회 개수") Integer limit
     );
 
-    @Operation(summary = "지수 차트 데이터 조회", description = "ID와 기간 유형에 따른 지수 차트 데이터(이동 평균선 포함)를 조회합니다.")
+    @Operation(summary = "지수 차트 데이터 조회", description = "지수의 차트 데이터를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
@@ -108,7 +108,7 @@ public interface IndexDataControllerSwagger {
             @Parameter(description = "기간 유형(DAILY, WEEKLY, MONTHLY 등)") String periodType
     );
 
-    @Operation(summary = "관심 지수 성과 조회", description = "즐겨찾기(관심) 지수의 등락 성과를 조회합니다.")
+    @Operation(summary = "관심 지수 성과 조회", description = "즐겨찾기로 등록된 지수들의 성과를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })

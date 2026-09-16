@@ -10,6 +10,7 @@ import org.springframework.core.annotation.AliasFor;
 import com.ssibssaggi.findex.common.exception.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -17,7 +18,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponse(
         responseCode = "404",
-        content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                        value = """
+                                {
+                                  "timestamp": "2025-03-06T05:39:06.152068Z",
+                                  "status": 400,
+                                  "message": "잘못된 요청입니다.",
+                                  "details": "부서 코드는 필수입니다."
+                                }
+                                """
+                )
+        )
 )
 public @interface ApiNotFoundResponse {
 

@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 import com.ssibssaggi.findex.common.exception.ErrorResponse;
 
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -22,8 +23,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponse(
         responseCode = "400",
-        description = "잘못된 요청",
-        content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        description = "잘못된 요청 (필수 필드 누락 등)",
+        content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                        value = """
+                                {
+                                  "timestamp": "2025-03-06T05:39:06.152068Z",
+                                  "status": 400,
+                                  "message": "잘못된 요청입니다.",
+                                  "details": "부서 코드는 필수입니다."
+                                }
+                                """
+                )
+        )
 )
 public @interface ApiBadRequestResponse {
 }
