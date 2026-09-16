@@ -7,12 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.ssibssaggi.findex.common.exception.CustomException;
+import com.ssibssaggi.findex.common.exception.ErrorStatus;
 
 public class CsvExporter {
     public static <T> void writeCsv(
@@ -38,7 +37,7 @@ public class CsvExporter {
             beanToCsv.write(exportData);
             writer.flush();
         } catch (Exception e) {
-            throw new CustomException("잘못된 요청입니다.", HttpStatus.INTERNAL_SERVER_ERROR, "CSV 파일 내보내기 중 오류가 발생했습니다.");
+            throw new CustomException(ErrorStatus.CSV_EXPORT_FAILED, "CSV 파일 내보내기 중 오류가 발생했습니다.");
         }
     }
 }

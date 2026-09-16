@@ -2,7 +2,6 @@ package com.ssibssaggi.findex.domain.service.index;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.ssibssaggi.findex.application.index.dto.IndexInfoCreateCommand;
@@ -11,6 +10,7 @@ import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexInforma
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
+import com.ssibssaggi.findex.common.exception.ErrorStatus;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
@@ -72,7 +72,8 @@ public class IndexInformationService {
                         indexInfoCreateCommand.indexName());
 
         if (isDuplicate) {
-            throw new CustomException("잘못된 요청입니다.", HttpStatus.BAD_REQUEST, "동일한 지수 분류와 지수명이 이미 등록되어 있습니다.");
+            throw new CustomException(ErrorStatus.INDEX_INFO_DUPLICATE,
+                    "동일한 지수 분류와 지수명이 이미 등록되어 있습니다.");
         }
 
         IndexInformation entity = indexInfoCreateCommand.toEntity();
@@ -88,8 +89,7 @@ public class IndexInformationService {
 
     public IndexInformation findById(Long id) {
         return indexInformationRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_INFO_NOT_FOUND,
                         "요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
     }
 
@@ -102,8 +102,7 @@ public class IndexInformationService {
             IndexInfoUpdateCommand indexInfoUpdateCommand
     ) {
         IndexInformation entity = indexInformationRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_INFO_NOT_FOUND,
                         "수정 요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
 
         entity.updateWithUser(
@@ -171,14 +170,13 @@ public class IndexInformationService {
 
     private void validateSyncIndexDataCommand(List<Long> ids) {
         if (ids.contains(-1L)) {
-            throw new CustomException("잘못된 지수정보ID", HttpStatus.BAD_REQUEST, "지수정보ID는 -1이 될 수없음.");
+            throw new CustomException(ErrorStatus.INVALID_INDEX_INFO_ID, "지수정보ID는 -1이 될 수없음.");
         }
     }
 
     public IndexInformation updateEnabled(Long id, boolean enabled) {
         IndexInformation updating = indexInformationRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_INFO_NOT_FOUND,
                         "요청 id : " + id + "번 - 정보가 존재하지 않습니다."));
 
         return updating.updateEnabled(enabled);

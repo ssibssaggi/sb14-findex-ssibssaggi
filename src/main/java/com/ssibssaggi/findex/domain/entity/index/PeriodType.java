@@ -1,8 +1,7 @@
 package com.ssibssaggi.findex.domain.entity.index;
 
-import org.springframework.http.HttpStatus;
-
 import com.ssibssaggi.findex.common.exception.CustomException;
+import com.ssibssaggi.findex.common.exception.ErrorStatus;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +26,6 @@ public enum PeriodType {
                 return period;
             }
         }
-        throw new CustomException("잘못된 기간 유형 입니다.", HttpStatus.BAD_REQUEST, "현재 입력된 타입값은 [" + value + "] 입니다.");
+        throw new CustomException(ErrorStatus.INVALID_PERIOD_TYPE, "현재 입력된 타입값은 [" + value + "] 입니다.");
     }
 }

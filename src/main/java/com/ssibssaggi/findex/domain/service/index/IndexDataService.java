@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
@@ -19,6 +18,7 @@ import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;
+import com.ssibssaggi.findex.common.exception.ErrorStatus;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexData;
@@ -29,9 +29,7 @@ import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 import com.ssibssaggi.findex.repository.indexdata.IndexDataRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IndexDataService {
@@ -198,8 +196,6 @@ public class IndexDataService {
         LocalDate baseDate = LocalDate.now(ZoneId.systemDefault()).minusDays(1); // 전날을 기준
 
         List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
-        log.debug("targetDates: {}", targetDatas);
-
         return targetDatas.stream().map(target -> {
             LocalDate targetDate = target.targetDate();
             Long targetInfoId = target.indexInfoId();
@@ -247,7 +243,7 @@ public class IndexDataService {
         Boolean isDuplicate = indexDataRepository.existsByIndexInformationAndBaseDate(
                 indexInformation, baseDate);
         if (isDuplicate) {
-            throw new CustomException("잘못된 요청입니다.", HttpStatus.BAD_REQUEST,
+            throw new CustomException(ErrorStatus.INDEX_DATA_DUPLICATE,
                     "지수 정보 id: " + indexInfoId + "번 - 정보가 존재하지 않습니다.");
         }
 
@@ -257,8 +253,7 @@ public class IndexDataService {
 
     public IndexData findById(Long id) {
         return indexDataRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_DATA_NOT_FOUND,
                         "지수 데이터 id: " + id + "번 - 정보가 존재하지 않습니다."));
     }
 
@@ -266,8 +261,7 @@ public class IndexDataService {
             Long id, IndexDataUpdateCommand updateCommand
     ) {
         IndexData indexData = indexDataRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_DATA_NOT_FOUND,
                         "지수 데이터 id: " + id + "번 - 정보가 존재하지 않습니다."));
 
         indexData.update(
@@ -287,8 +281,7 @@ public class IndexDataService {
 
     public void delete(Long id) {
         IndexData indexData = indexDataRepository.findById(id)
-                .orElseThrow(() -> new CustomException("잘못된 요청입니다.",
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomException(ErrorStatus.INDEX_DATA_NOT_FOUND,
                         "지수 데이터 id: " + id + "번 - 정보가 존재하지 않습니다."));
         indexDataRepository.delete(indexData);
     }
@@ -333,7 +326,6 @@ public class IndexDataService {
                     .divide(new BigDecimal(windowSize),
                             2,
                             RoundingMode.HALF_UP); // windowSize로 나눔, 소수 2자리, 반올림
-            log.debug("value: {}", value);
             result.add(DataPoints.of(currentDate, value));
         }
 
