@@ -62,11 +62,7 @@
 
 관련 PR: [지수 정보 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/21), [성과 랭킹](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/27), [차트 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/31), [Swagger](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/45)
 
-**사진·GIF:** 자료 추가 예정 — 지수 검색·즐겨찾기 변경과 대시보드 차트 조회 화면
 
-<!-- 화면 자료를 추가한 뒤 아래 이미지 문법의 주석을 해제합니다.
-![지수 정보 관리 및 차트 조회](docs/images/index-info-dashboard.gif)
--->
 
 ### 박수민 — Open API 연동과 자동 수집
 
@@ -79,11 +75,6 @@
 
 관련 PR: [지수 정보 연동](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/15), [연동 이력](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/25), [자동 연동 설정](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/34), [스케줄러](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/38), [실패 처리](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/46)
 
-**사진·GIF:** 자료 추가 예정 — 수동 연동 실행, 결과 이력 조회, 자동 연동 설정 변경 화면
-
-<!--
-![수동 연동 및 자동 연동 설정](docs/images/sync-jobs.gif)
--->
 
 ### 김수영 — 지수 데이터 관리
 
@@ -94,11 +85,7 @@
 
 관련 PR: [엔티티 구성](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/1), [등록·수정·삭제](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/28), [목록 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/35)
 
-**사진·GIF:** 자료 추가 예정 — 지수 데이터 등록·수정·삭제와 기간별 목록 조회 화면
 
-<!--
-![지수 데이터 관리](docs/images/index-data.gif)
--->
 
 ### 김세중 — 관심 지수 성과 조회
 
@@ -109,11 +96,6 @@
 
 관련 PR: [관심 지수 성과 조회 및 통합](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/36)
 
-**사진·GIF:** 자료 추가 예정 — 관심 지수 현황과 일간·주간·월간 성과 조회 화면
-
-<!--
-![관심 지수 성과 조회](docs/images/favorite-performance.gif)
--->
 
 ### 이현석 — 지수 데이터 CSV 내보내기
 
@@ -124,11 +106,6 @@
 
 관련 PR: [CSV 내보내기](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/39)
 
-**사진·GIF:** 자료 추가 예정 — 필터·정렬 적용 후 CSV 다운로드와 파일 내용 확인 화면
-
-<!--
-![CSV 내보내기](docs/images/csv-export.gif)
--->
 
 ## 파일 구조
 
