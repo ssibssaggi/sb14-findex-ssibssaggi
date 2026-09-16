@@ -113,8 +113,6 @@
 sb14-findex-ssibssaggi/
 ├── .github/                 # 이슈·PR 템플릿
 ├── config/                  # Checkstyle, IntelliJ 공통 설정
-├── docs/
-│   └── retrospective.md     # 개발 이력 기반 회고 초안
 ├── gradle/                  # Gradle Wrapper, IDE 설정 작업
 ├── scripts/                 # pre-commit, commit-msg Hook
 ├── src/
