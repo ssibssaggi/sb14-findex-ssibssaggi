@@ -3,6 +3,7 @@ package com.ssibssaggi.findex.domain.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -194,7 +195,7 @@ public class IndexDataService {
             List<Long> informationIds,
             String periodType
     ) {
-        LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
+        LocalDate baseDate = LocalDate.now(ZoneId.systemDefault()).minusDays(1); // 전날을 기준
 
         List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
         log.debug("targetDates: {}", targetDatas);
@@ -297,7 +298,7 @@ public class IndexDataService {
     }
 
     public List<IndexData> getIndexDataChartData(Long indexInfoId, String periodType) {
-        LocalDate baseDate = LocalDate.now().minusDays(1); // 기준일자(전일)
+        LocalDate baseDate = LocalDate.now(ZoneId.systemDefault()).minusDays(1); // 기준일자(전일)
         Optional<LocalDate> endDate = indexDataRepository.findTargetDate(baseDate, indexInfoId);
 
         return endDate
