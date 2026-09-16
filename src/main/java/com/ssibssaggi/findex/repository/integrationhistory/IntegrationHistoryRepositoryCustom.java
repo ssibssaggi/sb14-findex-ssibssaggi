@@ -2,7 +2,7 @@ package com.ssibssaggi.findex.repository.integrationhistory;
 
 import java.util.List;
 
-import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
+import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistoryFilterCondition;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 

@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.application.indexintegration;
+package com.ssibssaggi.findex.application.indexintegration.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

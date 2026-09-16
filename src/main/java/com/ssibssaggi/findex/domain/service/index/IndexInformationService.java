@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssibssaggi.findex.application.index.dto.IndexInfoCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexInfoUpdateCommand;
-import com.ssibssaggi.findex.application.indexintegration.UpsertIndexInformationCommand;
+import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexInformationCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;
 import com.ssibssaggi.findex.common.exception.CustomException;

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssibssaggi.findex.application.indexintegration.InsertIntegrationHistoryCommand;
-import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
+import com.ssibssaggi.findex.application.indexintegration.dto.InsertIntegrationHistoryCommand;
+import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistoryFilterCondition;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 import com.ssibssaggi.findex.repository.integrationhistory.IntegrationHistoryRepository;

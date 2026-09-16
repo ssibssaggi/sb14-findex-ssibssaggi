@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import com.ssibssaggi.findex.application.index.dto.DataPoints;
 import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
 import com.ssibssaggi.findex.application.index.dto.IndexDataUpdateCommand;
-import com.ssibssaggi.findex.application.indexintegration.UpsertIndexDataCommand;
+import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;

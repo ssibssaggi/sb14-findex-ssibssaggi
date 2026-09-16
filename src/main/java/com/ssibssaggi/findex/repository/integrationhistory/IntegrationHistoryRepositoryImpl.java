@@ -12,7 +12,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
+import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistoryFilterCondition;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationResult;

@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssibssaggi.findex.application.indexintegration.IndexIntegrationApplication;
-import com.ssibssaggi.findex.application.indexintegration.IntegrationHistoryFilterCondition;
-import com.ssibssaggi.findex.application.indexintegration.SyncIndexDataCommand;
+import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistoryFilterCondition;
+import com.ssibssaggi.findex.application.indexintegration.dto.SyncIndexDataCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataSyncRequest;

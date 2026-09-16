@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.application.indexintegration;
+package com.ssibssaggi.findex.application.indexintegration.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

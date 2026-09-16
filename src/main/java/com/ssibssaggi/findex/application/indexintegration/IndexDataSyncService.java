@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssibssaggi.findex.application.indexintegration.dto.InsertIntegrationHistoryCommand;
+import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 import com.ssibssaggi.findex.domain.service.index.IndexDataService;
 import com.ssibssaggi.findex.domain.service.integrationhistory.IntegrationHistoryService;
