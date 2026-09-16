@@ -14,8 +14,8 @@ import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistory
 import com.ssibssaggi.findex.application.indexintegration.dto.SyncIndexDataCommand;
 import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexDataCommand;
 import com.ssibssaggi.findex.application.indexintegration.dto.UpsertIndexInformationCommand;
-import com.ssibssaggi.findex.client.openapi.IndexDataFetchQuery;
 import com.ssibssaggi.findex.client.openapi.IndexOpenApiClient;
+import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchQuery;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
 import com.ssibssaggi.findex.common.dto.PageMeta;

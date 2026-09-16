@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.client.openapi;
+package com.ssibssaggi.findex.client.openapi.dto.indexdata;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

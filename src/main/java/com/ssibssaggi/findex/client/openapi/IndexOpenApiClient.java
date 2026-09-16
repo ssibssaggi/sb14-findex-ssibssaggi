@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchQuery;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataFetchResult;
 import com.ssibssaggi.findex.client.openapi.dto.indexdata.IndexDataOpenApiResponse;
 import com.ssibssaggi.findex.client.openapi.dto.indexinfo.IndexInfoFetchResult;
