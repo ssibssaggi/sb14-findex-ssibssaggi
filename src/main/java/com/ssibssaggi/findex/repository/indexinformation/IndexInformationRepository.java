@@ -1,0 +1,21 @@
+package com.ssibssaggi.findex.repository.indexinformation;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
+
+@Repository
+public interface IndexInformationRepository
+        extends JpaRepository<IndexInformation, Long>, IndexInformationCustomRepository {
+    // SELECT * FROM index_information WHERE index_classification = ? AND index_name = ?;
+    Optional<IndexInformation> findByIndexClassificationAndIndexName(String indexClassification, String indexName);
+
+    Boolean existsByIndexClassificationAndIndexName(String indexClassification, String indexName);
+
+    List<IndexInformation> findAllByAutoSyncConfig_EnabledTrue();
+}
+

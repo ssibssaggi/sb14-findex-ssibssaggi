@@ -1,0 +1,37 @@
+package com.ssibssaggi.findex.controller.dto;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import com.ssibssaggi.findex.application.index.dto.IndexDataCreateCommand;
+
+public record IndexDataCreateRequest(
+        Long indexInfoId,
+        LocalDate baseDate,
+        BigDecimal marketPrice,
+        BigDecimal closingPrice,
+        BigDecimal highPrice,
+        BigDecimal lowPrice,
+        BigDecimal versus,
+        BigDecimal fluctuationRate,
+        Long tradingQuantity,
+        Long tradingPrice,
+        Long marketTotalAmount
+) {
+
+    public IndexDataCreateCommand toCommand() {
+        return new IndexDataCreateCommand(
+                indexInfoId,
+                baseDate,
+                marketPrice,
+                closingPrice,
+                highPrice,
+                lowPrice,
+                versus,
+                fluctuationRate,
+                tradingQuantity,
+                tradingPrice,
+                marketTotalAmount
+        );
+    }
+}
