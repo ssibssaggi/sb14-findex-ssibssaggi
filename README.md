@@ -18,7 +18,7 @@
 | :---: | :---: | :---: | :---: | :---: |
 | <img src="https://github.com/EUNSOLY.png" width="100" alt="은솔 GitHub 프로필"> | <img src="https://github.com/ssoomni52.png" width="100" alt="박수민 GitHub 프로필"> | <img src="https://github.com/Ssu126.png" width="100" alt="김수영 GitHub 프로필"> | <img src="https://github.com/SB-14-KSJ.png" width="100" alt="김세중 GitHub 프로필"> | <img src="https://github.com/giseo1107.png" width="100" alt="이현석 GitHub 프로필"> |
 | [EUNSOLY](https://github.com/EUNSOLY) | [ssoomni52](https://github.com/ssoomni52) | [Ssu126](https://github.com/Ssu126) | [SB-14-KSJ](https://github.com/SB-14-KSJ) | [giseo1107](https://github.com/giseo1107) |
-| 지수 정보 관리<br>차트·랭킹·공통 API | Open API 연동<br>연동 이력·자동 수집 | 지수 데이터 CRUD<br>목록 조회 | 대시보드 구성<br>관심 지수 성과 조회 | CSV 내보내기<br>조회·정렬 처리 |
+| 지수 정보 관리<br>차트·랭킹·공통 API | Open API 연동<br>연동 이력·자동 수집 | 지수 데이터 CRUD | 대시보드 구성<br>관심 지수 성과 조회 | CSV 내보내기<br>조회·정렬 처리 |
 
 ## 기술 스택
 
@@ -63,7 +63,6 @@
 관련 PR: [지수 정보 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/21), [성과 랭킹](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/27), [차트 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/31), [Swagger](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/45)
 
 
-
 ### 박수민 — Open API 연동과 자동 수집
 
 - RestClient를 사용해 지수 정보와 날짜별 지수 데이터를 수집했습니다.
@@ -85,8 +84,6 @@
 
 관련 PR: [엔티티 구성](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/1), [등록·수정·삭제](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/28), [목록 조회](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/35)
 
-
-
 ### 김세중 — 관심 지수 성과 조회
 
 - 대시보드용 컨트롤러와 응답 DTO의 초기 구성을 담당했습니다.
@@ -97,6 +94,7 @@
 관련 PR: [관심 지수 성과 조회 및 통합](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/36)
 
 
+
 ### 이현석 — 지수 데이터 CSV 내보내기
 
 - 지수와 날짜 범위로 내보낼 데이터를 조회하고, 선택한 정렬 조건을 적용했습니다.
@@ -105,6 +103,8 @@
 - 내보내기 조회와 응답 처리의 계층을 분리했습니다. 이후 공통 CSV 유틸리티 정리는 은솔이 함께 진행했습니다.
 
 관련 PR: [CSV 내보내기](https://github.com/ssibssaggi/sb14-findex-ssibssaggi/pull/39)
+
+**사진·GIF:** 자료 추가 예정 — 필터·정렬 적용 후 CSV 다운로드와 파일 내용 확인 화면
 
 
 ## 파일 구조
@@ -161,11 +161,10 @@ flowchart LR
 
 ## 구현 홈페이지
 
-| 구분 | 주소·상태 |
-| --- | --- |
-| 배포 홈페이지 | 배포 URL 추가 필요 |
-| 로컬 홈페이지 | [http://localhost:8080/](http://localhost:8080/) — 백엔드 실행 후 접속 |
-| 로컬 API 문서 | [Swagger UI](http://localhost:8080/swagger-ui/index.html) |
+| 구분 | 주소·상태                                                                                 |
+| --- |---------------------------------------------------------------------------------------|
+| 배포 홈페이지 | [배포 URL](https://sb14-findex-ssibssaggi-production.up.railway.app/#/index-management) |
+| API 문서 | [Swagger UI](https://sb14-findex-ssibssaggi-production.up.railway.app/swagger-ui/index.html#/)                             |
 
 | 화면 | 이용 흐름 |
 | --- | --- |
@@ -173,6 +172,14 @@ flowchart LR
 | 지수 정보 관리 | 지수 검색 → 상세 정보 확인 → 정보 수정·즐겨찾기 관리 |
 | 지수 데이터 관리 | 지수·기간 선택 → 데이터 조회·관리 → CSV 다운로드 |
 | 연동 작업 관리 | 수동 연동 실행 → 작업 이력 확인 → 자동 연동 설정 |
+
+## 프로젝트 회고록 및 발표자료
+
+| 자료 | 링크·상태 |
+| --- | --- |
+| 발표자료 | PDF·PPTX 첨부 또는 발표자료 링크 추가 필요 |
+| 시연 영상 | 영상 파일 또는 링크 추가 필요 |
+
 
 ## 시작하기
 
