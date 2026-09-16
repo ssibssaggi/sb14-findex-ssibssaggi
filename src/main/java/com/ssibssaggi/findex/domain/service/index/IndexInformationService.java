@@ -165,7 +165,14 @@ public class IndexInformationService {
     }
 
     public List<IndexInformation> findAllByIds(List<Long> ids) {
+        validateSyncIndexDataCommand(ids);
         return indexInformationRepository.findAllById(ids);
+    }
+
+    private void validateSyncIndexDataCommand(List<Long> ids) {
+        if (ids.contains(-1L)) {
+            throw new CustomException("잘못된 지수정보ID", HttpStatus.BAD_REQUEST, "지수정보ID는 -1이 될 수없음.");
+        }
     }
 
     public IndexInformation updateEnabled(Long id, boolean enabled) {
