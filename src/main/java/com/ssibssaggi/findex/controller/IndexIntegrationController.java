@@ -18,6 +18,7 @@ import com.ssibssaggi.findex.application.indexintegration.IndexIntegrationApplic
 import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistoryFilterCondition;
 import com.ssibssaggi.findex.application.indexintegration.dto.SyncIndexDataCommand;
 import com.ssibssaggi.findex.common.dto.CursorPageResult;
+import com.ssibssaggi.findex.common.utils.DateTimeRangeUtils;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexDataSyncRequest;
 import com.ssibssaggi.findex.controller.dto.SyncJobDto;
@@ -75,8 +76,8 @@ public class IndexIntegrationController implements IndexIntegrationControllerSwa
                 baseDateTo,
                 status,
                 worker,
-                jobTimeFrom,
-                jobTimeTo
+                DateTimeRangeUtils.toStartOfDay(jobTimeFrom),
+                DateTimeRangeUtils.toLastOfDay(jobTimeTo)
         );
         CursorPaginationCondition paginationCondition = new CursorPaginationCondition(
                 idAfter,
