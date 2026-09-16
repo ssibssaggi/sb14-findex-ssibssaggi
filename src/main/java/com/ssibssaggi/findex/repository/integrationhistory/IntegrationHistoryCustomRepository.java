@@ -6,7 +6,7 @@ import com.ssibssaggi.findex.application.indexintegration.dto.IntegrationHistory
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 
-public interface IntegrationHistoryRepositoryCustom {
+public interface IntegrationHistoryCustomRepository {
     List<IntegrationHistory> searchIntegrationHistories(
             IntegrationHistoryFilterCondition queryFilterCondition,
             CursorPaginationCondition paginationCondition

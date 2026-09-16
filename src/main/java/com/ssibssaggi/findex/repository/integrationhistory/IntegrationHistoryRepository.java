@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import com.ssibssaggi.findex.domain.entity.integrationhistory.IntegrationHistory;
 
 public interface IntegrationHistoryRepository
-        extends JpaRepository<IntegrationHistory, Long>, IntegrationHistoryRepositoryCustom {
+        extends JpaRepository<IntegrationHistory, Long>, IntegrationHistoryCustomRepository {
 
     //IndexInformation의 id가 일치하는 데이터 DELETE
     @Modifying(clearAutomatically = true, flushAutomatically = true)

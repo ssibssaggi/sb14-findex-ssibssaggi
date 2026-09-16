@@ -10,7 +10,7 @@ import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
 @Repository
 public interface IndexInformationRepository
-        extends JpaRepository<IndexInformation, Long>, IndexInformationRepositoryCustom {
+        extends JpaRepository<IndexInformation, Long>, IndexInformationCustomRepository {
     // SELECT * FROM index_information WHERE index_classification = ? AND index_name = ?;
     Optional<IndexInformation> findByIndexClassificationAndIndexName(String indexClassification, String indexName);
 

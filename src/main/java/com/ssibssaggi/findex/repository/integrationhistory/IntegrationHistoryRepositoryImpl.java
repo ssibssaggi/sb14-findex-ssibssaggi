@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class IntegrationHistoryRepositoryImpl implements IntegrationHistoryRepositoryCustom {
+public class IntegrationHistoryRepositoryImpl implements IntegrationHistoryCustomRepository {
     private static final QIntegrationHistory integrationHistory = QIntegrationHistory.integrationHistory;
 
     private final JPAQueryFactory queryFactory;

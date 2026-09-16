@@ -23,7 +23,7 @@ import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class IndexDataCustomRepositoryImpl implements IndexDataCustomRepository {
+public class IndexDataRepositoryImpl implements IndexDataCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override

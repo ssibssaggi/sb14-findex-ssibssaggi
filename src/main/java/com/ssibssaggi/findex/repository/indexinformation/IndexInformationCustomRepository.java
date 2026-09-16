@@ -6,7 +6,7 @@ import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 
-public interface IndexInformationRepositoryCustom {
+public interface IndexInformationCustomRepository {
     List<IndexInformation> searchIndexInfos(
             IndexInfoFilterCondition indexInfoFilterCondition,
             CursorPaginationCondition cursorPaginationCondition
