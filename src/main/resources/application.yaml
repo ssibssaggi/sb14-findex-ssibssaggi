@@ -13,7 +13,7 @@ spring:
     jpa:
       show-sql: true
       hibernate:
-        ddl-auto: update # create -> update로 변경 상태
+        ddl-auto: create # create -> update로 변경 상태
         naming:
           physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       properties:

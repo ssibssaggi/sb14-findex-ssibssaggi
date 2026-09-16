@@ -116,7 +116,15 @@ public class IndexIntegrationApplication {
         List<IndexDataFetchResult> results = new ArrayList<>();
         List<IndexDataFetchQuery> failedQueries = new ArrayList<>();
 
+        int iterationCount = 0;
         for (IndexDataFetchQuery query : queries) {
+            if (query.indexInformation().getId() > 160L && iterationCount++ % 2 == 0) {
+                failedQueries.add(query);
+                log.warn("[테스트 위한 의도적 지수 데이터 연동 실패] indexInfoId={}, baseDateFrom={}, baseDateTo={}",
+                        query.indexInformation().getId(), query.baseDateFrom(), query.baseDateTo());
+                continue;
+            }
+
             try {
                 results.addAll(indexOpenApiClient.syncIndexData(query));
             } catch (CustomException e) {
