@@ -197,7 +197,7 @@ public class IndexDataService {
         LocalDate baseDate = LocalDate.now().minusDays(1); // 전날을 기준
 
         List<IndexInfoTargetDate> targetDatas = indexDataRepository.findTargetDates(baseDate, informationIds);
-        System.out.println(targetDatas);
+        log.debug("targetDates: {}", targetDatas);
 
         return targetDatas.stream().map(target -> {
             LocalDate targetDate = target.targetDate();
@@ -332,7 +332,7 @@ public class IndexDataService {
                     .divide(new BigDecimal(windowSize),
                             2,
                             RoundingMode.HALF_UP); // windowSize로 나눔, 소수 2자리, 반올림
-            System.out.println("value : " + value);
+            log.debug("value: {}", value);
             result.add(DataPoints.of(currentDate, value));
         }
 
