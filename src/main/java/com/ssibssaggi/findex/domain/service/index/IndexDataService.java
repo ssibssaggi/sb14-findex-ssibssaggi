@@ -26,7 +26,7 @@ import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
 import com.ssibssaggi.findex.domain.entity.index.PeriodType;
 import com.ssibssaggi.findex.domain.support.IndexDataPair;
 import com.ssibssaggi.findex.domain.support.IndexInfoTargetDate;
-import com.ssibssaggi.findex.repository.IndexDataRepository;
+import com.ssibssaggi.findex.repository.indexdata.IndexDataRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

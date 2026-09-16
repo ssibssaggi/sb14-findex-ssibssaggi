@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.repository;
+package com.ssibssaggi.findex.repository.indexdata;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

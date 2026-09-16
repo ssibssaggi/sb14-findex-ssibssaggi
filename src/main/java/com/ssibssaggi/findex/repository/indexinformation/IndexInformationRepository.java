@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.repository;
+package com.ssibssaggi.findex.repository.indexinformation;
 
 import java.util.List;
 import java.util.Optional;

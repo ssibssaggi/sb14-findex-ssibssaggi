@@ -1,4 +1,4 @@
-package com.ssibssaggi.findex.repository;
+package com.ssibssaggi.findex.repository.indexdata;
 
 import java.time.LocalDate;
 import java.util.List;

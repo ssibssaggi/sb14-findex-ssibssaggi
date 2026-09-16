@@ -14,7 +14,7 @@ import com.ssibssaggi.findex.common.exception.CustomException;
 import com.ssibssaggi.findex.controller.dto.CursorPaginationCondition;
 import com.ssibssaggi.findex.controller.dto.IndexInfoFilterCondition;
 import com.ssibssaggi.findex.domain.entity.index.IndexInformation;
-import com.ssibssaggi.findex.repository.IndexInformationRepository;
+import com.ssibssaggi.findex.repository.indexinformation.IndexInformationRepository;
 
 import lombok.RequiredArgsConstructor;
 
