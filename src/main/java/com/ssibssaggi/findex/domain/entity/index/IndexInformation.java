@@ -92,12 +92,23 @@ public class IndexInformation {
             Float baseIndex,
             Boolean favorite
     ) {
-
-        this.employedItemsCount = employedItemsCount;
-        this.basePointInTime = LocalDate.parse(basePointInTime);
-        this.baseIndex = baseIndex;
+        boolean hasChanged = false;
+        if (!this.employedItemsCount.equals(employedItemsCount)) {
+            hasChanged = true;
+            this.employedItemsCount = employedItemsCount;
+        }
+        if (!this.basePointInTime.equals(LocalDate.parse(basePointInTime))) {
+            hasChanged = true;
+            this.basePointInTime = LocalDate.parse(basePointInTime);
+        }
+        if (!this.baseIndex.equals(baseIndex)) {
+            hasChanged = true;
+            this.baseIndex = baseIndex;
+        }
+        if (hasChanged) {
+            this.sourceType = SourceType.USER;
+        }
         this.favorite = favorite;
-        this.sourceType = SourceType.USER;
     }
 
     public void updateWithOpenApi(
